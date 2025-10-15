@@ -44,3 +44,4 @@ class ModelTest(TestCase):
         )
         self.restaurant.delete()
         self.assertEqual(MenuItem.objects.count(), 0)
+        
