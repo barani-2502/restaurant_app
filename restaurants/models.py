@@ -1,3 +1,132 @@
 from django.db import models
 
-# Create your models here.
+class Cuisine(models.Model):
+    """
+    Represents the type of cuisine(eg., Chinese, Italian, etc) 
+    which can be associated with restaurants
+    """
+    name = models.CharField(
+        max_length=50,
+        help_text="Enter the name of cuisine"
+    )
+    
+    description = models.CharField(
+        max_length=250,
+        blank=True,
+        null=True,
+        help_text="Optional description of the cuisine"
+    )
+
+    def __str__(self):
+        return self.name
+
+class Restaurant(models.Model):
+    """
+    Represents a restaurant with details, cuisine,
+    food type, cost, open status and spotlight status.
+    """
+    class FoodType(models.TextChoices):
+        VEG = 'veg', 'Vegetarian'
+        NON_VEG = 'non_veg', 'Non-Vegetarian'
+        VEGAN = 'vegan', 'Vegan'
+
+    name = models.CharField(
+        max_length=50,
+        help_text="Name of the restaurant"
+    )
+
+    address = models.CharField(
+        max_length=200,
+        help_text="Address of the restaurant"
+    )
+
+    city = models.CharField(
+        max_length=30,
+        help_text="City where the restaurant is located",
+    )
+
+    cost_for_two = models.IntegerField(
+        help_text="Average cost for two people"
+    )
+
+    food_type = models.CharField(
+        max_length=15,
+        choices=FoodType.choices,
+        default=FoodType.NON_VEG,
+        help_text="Type of food: Veg / Non-veg / Vegan"
+    )
+
+    open_status = models.BooleanField(
+        default=True,
+        help_text="Is the restaurant currently open?",
+    )
+
+    cuisines = models.ManyToManyField(
+        Cuisine,
+        related_name='restaurants',
+        help_text="Cuisines served by the restaurant"
+    )
+
+    spotlight = models.BooleanField(
+        default=False,
+        help_text="Set True to display the restaurant on homepage"
+    )
+
+    def __str__(self):
+        return self.name
+    
+class MenuItem(models.Model):
+    """
+    Represents a food item from meny of a restaurant.
+    """
+    restaurant = models.ForeignKey(
+        Restaurant,
+        related_name='menu_items',
+        on_delete=models.CASCADE,
+        help_text="The restaurant that offers this menu item"
+    )
+    name = models.CharField(
+        max_length=50,
+        help_text="Name of the dish"
+    )
+    description = models.CharField(
+        max_length=200,
+        help_text="Description of the dish"
+    )
+    price = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        help_text="Price of the dish"
+    )
+
+class RestaurantPhoto(models.Model):
+    """
+    Stores photos of a restaurant.
+    """
+    restaurant = models.ForeignKey(
+        Restaurant,
+        related_name='restaurant_photos',
+        on_delete=models.CASCADE,
+        help_text="The name of the restaurant of the given photo"
+    )
+    image = models.ImageField(
+        upload_to='restaurant_photos/',
+        blank=True,
+        null=True,
+        help_text="Images of the restaurant"
+    )
+
+class MenuItemPhoto(models.Model):
+    menu_item = models.ForeignKey(
+        MenuItem,
+        related_name='menu_item_photos',
+        on_delete=models.CASCADE,
+        help_text="Represents the menu item of the given image"
+    )
+
+    image = models.ImageField(
+        upload_to='menu_items/',
+        blank=True,
+        null=True,
+        help_text="Image of the menu item"
+    )
