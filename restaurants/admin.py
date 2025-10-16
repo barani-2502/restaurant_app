@@ -3,11 +3,11 @@ from .models import Restaurant, MenuItem, MenuItemPhoto, RestaurantPhoto, Cuisin
 
 class MenuItemPhotoInline(admin.TabularInline):
     model = MenuItemPhoto
-    extra = 1 
+    extra = 0 
 
 class RestaurantPhotoInline(admin.TabularInline):
     model = RestaurantPhoto
-    extra = 1
+    extra = 0
 
 @admin.register(Restaurant)
 class RestaurantAdmin(admin.ModelAdmin):
