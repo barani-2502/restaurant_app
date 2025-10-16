@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator
 
 class Cuisine(models.Model):
     """
@@ -96,7 +97,9 @@ class MenuItem(models.Model):
     price = models.DecimalField(
         max_digits=5,
         decimal_places=2,
-        help_text="Price of the dish"
+        help_text="Price of the dish",
+        validators=[MinValueValidator(0.00)],
+        default=0.00,
     )
 
     def __str__(self):
