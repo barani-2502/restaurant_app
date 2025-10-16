@@ -99,6 +99,9 @@ class MenuItem(models.Model):
         help_text="Price of the dish"
     )
 
+    def __str__(self):
+        return f"{self.name} - {self.restaurant.name}"
+
 class RestaurantPhoto(models.Model):
     """
     Stores photos of a restaurant.
@@ -116,6 +119,9 @@ class RestaurantPhoto(models.Model):
         help_text="Images of the restaurant"
     )
 
+    def __str__(self):
+        return f"Photo of {self.restaurant.name}"
+
 class MenuItemPhoto(models.Model):
     menu_item = models.ForeignKey(
         MenuItem,
@@ -130,3 +136,6 @@ class MenuItemPhoto(models.Model):
         null=True,
         help_text="Image of the menu item"
     )
+
+    def __str__(self):
+        return f"Photo of {self.menu_item.name}"
