@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MinValueValidator
+from decimal import Decimal
 
 class Cuisine(models.Model):
     """
@@ -98,9 +99,14 @@ class MenuItem(models.Model):
         max_digits=5,
         decimal_places=2,
         help_text="Price of the dish",
-        validators=[MinValueValidator(0.00)],
-        default=0.00,
+        validators=[MinValueValidator(Decimal('0.00'))],
+        default=Decimal('0.00'),
     )
+
+    class Meta:
+        constraints = [
+            models.CheckConstraint(check=models.Q(price__gte=0), name="price_non_negative")
+        ]
 
     def __str__(self):
         return f"{self.name} - {self.restaurant.name}"
