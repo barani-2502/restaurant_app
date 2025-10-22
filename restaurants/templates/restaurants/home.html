@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="text-center my-4">
+    <h1>Discover the best restaurants</h1>
+    <a href="#" class="btn btn-primary">Browse Restaurants</a>
+</div>
+
+<div class="container">
+    <h2>Spotlight</h2>
+    <div class="row">
+        {% for restaurant in spotlighted_restaurants %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                {% if restaurant.restaurant_photos.first %}
+                    <img src="{{ restaurant.restaurant_photos.first.image.url }}"  class="card-img-top"  alt="{{restaurant.name}}" >
+                {% endif %}
+                <div class="card-body">
+                    <h4>{{ restaurant.name }}</h4>
+                    <h5>{{ restaurant.food_type }}</h5>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
