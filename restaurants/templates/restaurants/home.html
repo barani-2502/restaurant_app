@@ -15,8 +15,8 @@
         {% for restaurant in spotlighted_restaurants %}
         <div class="col-md-4 mb-4">
             <div class="card h-100">
-                {% if restaurant.restaurant_photos.first %}
-                    <img src="{{ restaurant.restaurant_photos.first.image.url }}"  class="card-img-top"  alt="{{restaurant.name}}" >
+                {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
+                    <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
                 {% endif %}
                 <div class="card-body">
                     <h4>{{ restaurant.name }}</h4>
