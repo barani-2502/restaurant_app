@@ -21,9 +21,7 @@
                 <p><strong>Open: </strong>{{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed"}}</p>
                 <p><strong>Address: </strong>{{ restaurant.address }}</p>
                 <p><strong>Cuisines: </strong>
-                    {% for cuisine in restaurant.cuisines.all %}
-                        {{ cuisine.name }}{% if not forloop.last %}, {% endif %}
-                    {% endfor %}
+                {{ restaurant.cuisines.all|join:", "}}
                 </p>
             </div>
         </div>
