@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="text-center my-4">
+    <h1>Discover the best restaurants</h1>
+    <a href="#" class="btn btn-primary">Browse Restaurants</a>
+</div>
+
+<div class="container">
+    <h2>Spotlight</h2>
+    <div class="row">
+        {% for restaurant in spotlighted_restaurants %}
+            {% include 'restaurants/restaurant_card.html' %}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
