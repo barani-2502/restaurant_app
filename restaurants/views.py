@@ -17,12 +17,15 @@ class RestaurantListView(ListView):
     context_object_name = 'restaurants'
     paginate_by = 6
 
+    def get_queryset(self):
+        return Restaurant.objects.prefetch_related('restaurant_photos')
+
 class RestaurantDetailView(DetailView):
     model = Restaurant
     template_name = 'restaurants/restaurant_detail.html'
-    content_object_name = 'restaurants'
+    context_object_name = 'restaurant'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['menu_items'] = self.object.menu_items.all()
+        context['menu_items'] = self.object.menu_items.prefetch_related('menu_item_photos').all()
         return context
