@@ -20,3 +20,16 @@ body{
   object-fit: cover;
 }
 
+.menu-item-image {
+  height: 100px;
+  width: 100px;
+  object-fit: cover;
+  margin-right: 1rem;
+  border-radius: 0.25rem;
+}
+
+.menu-item-details {
+  flex: 1;
+  min-width: 0;
+}
+

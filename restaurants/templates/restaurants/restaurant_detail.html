@@ -36,10 +36,9 @@
                         {% if item.menu_item_photos.first %}
                             <img src="{{ item.menu_item_photos.first.image.url }}" 
                                 alt="{{ item.name }}" 
-                                style="height: 100px; width: 100px; object-fit: cover;"
-                                class="img-fluid rounded me-3">
+                                class="menu-item-image img-fluid">
                         {% endif %}
-                        <div style="flex: 1; min-width: 0;">
+                        <div class="menu-item-details">
                             <strong>{{ item.name }}</strong><br>
                             ₹{{ item.price }}<br>
                             <p class="mb-0">{{ item.description }}</p>
