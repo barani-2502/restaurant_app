@@ -1,13 +1,13 @@
-from django.shortcuts import render
+from django.views.generic import TemplateView
 from .models import Restaurant
 
-SPOTLIGHT_RESTAURANT_COUNT = 5
+SPOTLIGHT_RESTAURANT_COUNT = 6
 
-def home(request):
-    spotlighted_restaurants = Restaurant.objects.filter(spotlight=True)[:5].prefetch_related('restaurant_photos')[:SPOTLIGHT_RESTAURANT_COUNT]
-    context = {
-        'spotlighted_restaurants': spotlighted_restaurants
-    }
+class HomePageView(TemplateView):
+    template_name = 'restaurants/home.html'
 
-    return render(request, 'restaurants/home.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['spotlighted_restaurants'] = Restaurant.objects.filter(spotlight=True)[:5].prefetch_related('restaurant_photos')[:SPOTLIGHT_RESTAURANT_COUNT]
+        return context
 
