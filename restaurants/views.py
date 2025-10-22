@@ -1,13 +1,14 @@
-from django.views.generic import TemplateView
+from django.views.generic import ListView
 from .models import Restaurant
 
 SPOTLIGHT_RESTAURANT_COUNT = 6
 
-class HomePageView(TemplateView):
+class HomePageView(ListView):
+    model = Restaurant
     template_name = 'restaurants/home.html'
+    context_object_name = 'spotlighted_restaurants'
+    paginate_by = SPOTLIGHT_RESTAURANT_COUNT
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['spotlighted_restaurants'] = Restaurant.objects.filter(spotlight=True)[:5].prefetch_related('restaurant_photos')[:SPOTLIGHT_RESTAURANT_COUNT]
-        return context
+    def get_queryset(self):
+        return Restaurant.objects.filter(spotlight=True).prefetch_related('restaurant_photos')
 
