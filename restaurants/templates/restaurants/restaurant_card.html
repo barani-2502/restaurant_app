@@ -4,7 +4,7 @@
             <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
         {% endif %}
         <div class="card-body">
-            <h4>{{ restaurant.name }}</h4>
+            <h4><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.name }}</a></h4>
             <h5>{{ restaurant.city }}</h5>
         </div>
     </div>
