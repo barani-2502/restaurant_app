@@ -1,12 +1,16 @@
-<div class="col-md-4 mb-4">
-    <div class="card h-100">
-        {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
-            <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
-        {% endif %}
-        <div class="card-body">
-            <h4><a href="{% url 'restaurant-detail' restaurant.pk %}">{{ restaurant.name }}</a></h4>
-            <h5>{{ restaurant.city }}</h5>
-        </div>
+<div class="bg-white rounded border overflow-hidden border-gray-300 flex flex-col">
+    {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
+        <img src="{{ restaurant.restaurant_photos.first.image.url }}" 
+            alt="{{ restaurant.name }}" 
+            class="h-48 w-full object-cover">
+    {% endif %}
+
+    <div class="p-4 flex-1 flex flex-col justify-between">
+        <h4>
+            <a href="{% url 'restaurant-detail' restaurant.pk %}">
+                {{ restaurant.name }}
+            </a>
+        </h4>
+        <h5>{{ restaurant.city }}</h5>
     </div>
 </div>
-

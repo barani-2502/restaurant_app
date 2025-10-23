@@ -4,44 +4,53 @@
 
 {% block content %}
 
-<h2 class="mb-2">{{ restaurant.name }}</h2>
+<h2>{{ restaurant.name }}</h2>
 
-<div class="row">
-    <div class="col-md-4 mb-4">
-        <div class="card h-100">
-            {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
-                <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
-            {% endif %}
-            <div class="card-body">
-                <h5 class="text-center">Details</h5>
-                <hr>
-                <p><strong>City: </strong>{{ restaurant.city }}</p>
-                <p><strong>Food Type: </strong>{{ restaurant.get_food_type_display }}</p>
-                <p><strong>Cost for two: </strong>{{ restaurant.cost_for_two }}</p>
-                <p><strong>Open: </strong>{{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed"}}</p>
-                <p><strong>Address: </strong>{{ restaurant.address }}</p>
-                <p><strong>Cuisines: </strong>
-                {{ restaurant.cuisines.all|join:", "}}
-                </p>
-            </div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="bg-white rounded-lg overflow-hidden border border-gray-300 flex flex-col">
+        {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
+            <img 
+                src="{{ restaurant.restaurant_photos.first.image.url }}" 
+                alt="{{ restaurant.name }}" 
+                class="h-56 w-full object-cover"
+            >
+        {% endif %}
+        
+        <div class="p-5">
+            <h5 class="text-center">Details</h5>
+            <hr>
+
+            <p class="mb-2"><strong>City:</strong> {{ restaurant.city }}</p>
+            <p class="mb-2"><strong>Food Type:</strong> {{ restaurant.get_food_type_display }}</p>
+            <p class="mb-2"><strong>Cost for two:</strong> ₹{{ restaurant.cost_for_two }}</p>
+            <p class="mb-2"><strong>Open:</strong> 
+                {{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed" }}
+            </p>
+            <p class="mb-2"><strong>Address:</strong> {{ restaurant.address }}</p>
+            <p><strong>Cuisines:</strong> {{ restaurant.cuisines.all|join:", " }}</p>
         </div>
     </div>
 
-    <div class="col-md-8 mb-4">
-        <h2 class="mt-md-0 mt-4">Menu</h2>
+
+    <div class="lg:col-span-2">
+        <h2>Menu</h2>
+
         {% if menu_items %}
-            <ul class="list-group mb-4">
+            <ul>
                 {% for item in menu_items %}
-                    <li class="list-group-item d-flex align-items-center">
+                    <li class="flex items-start bg-white rounded-lg border  p-4">
                         {% if item.menu_item_photos.first %}
-                            <img src="{{ item.menu_item_photos.first.image.url }}" 
+                            <img 
+                                src="{{ item.menu_item_photos.first.image.url }}" 
                                 alt="{{ item.name }}" 
-                                class="menu-item-image img-fluid">
+                                class="w-20 h-20 object-cover"
+                            >
                         {% endif %}
-                        <div class="menu-item-details">
+                        <div class="space-y-1 ml-2">
                             <strong>{{ item.name }}</strong><br>
-                            ₹{{ item.price }}<br>
-                            <p class="mb-0">{{ item.description }}</p>
+                            <span>₹{{ item.price }}</span><br>
+                            <small>{{ item.description }}</small>
                         </div>
                     </li>
                 {% endfor %}
