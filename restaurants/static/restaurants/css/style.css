@@ -20,16 +20,10 @@ body{
   object-fit: cover;
 }
 
-.menu-item-image {
-  height: 100px;
-  width: 100px;
-  object-fit: cover;
-  margin-right: 1rem;
-  border-radius: 0.25rem;
-}
-
-.menu-item-details {
-  flex: 1;
-  min-width: 0;
+input {
+  border: 1px solid #0a0a0a !important;
+  border-radius: 6px;
+  padding: 8px;
+  width: 100%;
 }
 
