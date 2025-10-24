@@ -24,13 +24,21 @@
 
             <li>
                 <span class="px-4 py-2 text-sm font-semibold border rounded">
+<<<<<<< HEAD
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+=======
+                    {{ page_obj.number }}
+>>>>>>> db8f01f (feat: Add restaurant list view, URL routing, and template)
                 </span>
             </li>
 
             {% if page_obj.has_next %}
                 <li>
+<<<<<<< HEAD
                     <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
+=======
+                    <a href="?page={{ page_obj.next_page_number }}"class="px-4 py-2 text-sm font-medium border rounded">Next</a>
+>>>>>>> db8f01f (feat: Add restaurant list view, URL routing, and template)
                 </li>
             {% endif %}
         </ul>
