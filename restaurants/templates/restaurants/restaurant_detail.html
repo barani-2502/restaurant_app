@@ -7,10 +7,10 @@
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="bg-white rounded-lg overflow-hidden border border-gray-300 flex flex-col">
-        {% with photo=item.menu_item_photos.first %}
-            {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
+        {% with photo=restaurant.restaurant_photos.first %}
+            {% if photo.image %}
                 <img 
-                    src="{{ restaurant.restaurant_photos.first.image.url }}" 
+                    src="{{ photo.image.url }}" 
                     alt="{{ restaurant.name }}" 
                     class="h-56 w-full object-cover"
                 >
@@ -40,13 +40,15 @@
             <ul>
                 {% for item in menu_items %}
                     <li class="flex items-start bg-white rounded-lg border  p-4">
-                        {% if item.menu_item_photos.first %}
-                            <img 
-                                src="{{ item.menu_item_photos.first.image.url }}" 
-                                alt="{{ item.name }}" 
-                                class="w-20 h-20 object-cover"
-                            >
-                        {% endif %}
+                        {% with photo=item.menu_item_photos.first %}
+                            {% if photo.image %}
+                                <img 
+                                    src="{{ photo.image.url }}" 
+                                    alt="{{ item.name }}" 
+                                    class="w-20 h-20 object-cover"
+                                >
+                            {% endif %}
+                        {% endwith %}
                         <div class="space-y-1 ml-2">
                             <p><strong>{{ item.name }}</strong></p>
                             <p><span>₹{{ item.price }}</span></p>
