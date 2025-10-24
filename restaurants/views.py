@@ -1,5 +1,9 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.forms import UserCreationForm
+from django.urls import reverse_lazy
+from django.contrib import messages
 from .models import Restaurant
+from .forms import CustomUserCreationForm
 
 
 class HomePageView(ListView):
@@ -32,3 +36,13 @@ class RestaurantDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['menu_items'] = self.object.menu_items.prefetch_related('menu_item_photos').all()
         return context
+
+class RegisterView(CreateView):
+    form_class = CustomUserCreationForm
+    template_name = "registration/register.html"
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        messages.success(self.request, "Account created successfully")
+        return response
