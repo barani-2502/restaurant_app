@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<div class="flex justify-center mt-20 mb-20">
+    <div class="bg-white p-6 rounded-lg border h-full w-full max-w-md">
+        <h4 class="text-center">Register to Find My Bite</h4>
+        <hr>
+        <form method="post" class="px-2 py-2">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="flex flex-col mt-2 mb-2">
+                    {{ field.label }}:
+                    {{ field }}
+                    {% if field.help_text %}
+                        <small class="text-gray-500">{{ field.help_text }}</small>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button type="submit" class=" w-full bg-blue-600 text-white mt-2 py-2 rounded">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
