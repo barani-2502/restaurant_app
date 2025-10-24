@@ -2,21 +2,23 @@
 
 {% block content %}
 
-<h2>{{ restaurant.name }}</h2>
+<h1>{{ restaurant.name }}</h1>
 
 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
     
     <div class="bg-white rounded-lg overflow-hidden border border-gray-300 flex flex-col">
-        {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
-            <img 
-                src="{{ restaurant.restaurant_photos.first.image.url }}" 
-                alt="{{ restaurant.name }}" 
-                class="h-56 w-full object-cover"
-            >
-        {% endif %}
+        {% with photo=item.menu_item_photos.first %}
+            {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
+                <img 
+                    src="{{ restaurant.restaurant_photos.first.image.url }}" 
+                    alt="{{ restaurant.name }}" 
+                    class="h-56 w-full object-cover"
+                >
+            {% endif %}
+        {% endwith %}
         
         <div class="p-5">
-            <h5 class="text-center">Details</h5>
+            <h2 class="text-center">Details</h2>
             <hr>
 
             <p class="mb-2"><strong>City:</strong> {{ restaurant.city }}</p>
@@ -46,9 +48,9 @@
                             >
                         {% endif %}
                         <div class="space-y-1 ml-2">
-                            <strong>{{ item.name }}</strong><br>
-                            <span>₹{{ item.price }}</span><br>
-                            <small>{{ item.description }}</small>
+                            <p><strong>{{ item.name }}</strong></p>
+                            <p><span>₹{{ item.price }}</span></p>
+                            <p><small>{{ item.description }}</small></p>
                         </div>
                     </li>
                 {% endfor %}
