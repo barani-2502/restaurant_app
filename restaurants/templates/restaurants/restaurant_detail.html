@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>{{ restaurant.name }}</h1>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <div class="bg-white rounded-lg overflow-hidden border border-gray-300 flex flex-col">
+        {% with photo=restaurant.restaurant_photos.first %}
+            {% if photo.image %}
+                <img 
+                    src="{{ photo.image.url }}" 
+                    alt="{{ restaurant.name }}" 
+                    class="h-56 w-full object-cover"
+                >
+            {% endif %}
+        {% endwith %}
+        
+        <div class="p-5">
+            <h2 class="text-center">Details</h2>
+            <hr>
+
+            <p class="mb-2"><strong>City:</strong> {{ restaurant.city }}</p>
+            <p class="mb-2"><strong>Food Type:</strong> {{ restaurant.get_food_type_display }}</p>
+            <p class="mb-2"><strong>Cost for two:</strong> ₹{{ restaurant.cost_for_two }}</p>
+            <p class="mb-2"><strong>Open:</strong> 
+                {{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed" }}
+            </p>
+            <p class="mb-2"><strong>Address:</strong> {{ restaurant.address }}</p>
+            <p><strong>Cuisines:</strong> {{ restaurant.cuisines.all|join:", " }}</p>
+        </div>
+    </div>
+
+
+    <div class="lg:col-span-2">
+        <h2>Menu</h2>
+
+        {% if menu_items %}
+            <ul>
+                {% for item in menu_items %}
+                    <li class="flex items-start bg-white rounded-lg border  p-4">
+                        {% with photo=item.menu_item_photos.first %}
+                            {% if photo.image %}
+                                <img 
+                                    src="{{ photo.image.url }}" 
+                                    alt="{{ item.name }}" 
+                                    class="w-20 h-20 object-cover"
+                                >
+                            {% endif %}
+                        {% endwith %}
+                        <div class="space-y-1 ml-2">
+                            <p><strong>{{ item.name }}</strong></p>
+                            <p><span>₹{{ item.price }}</span></p>
+                            <p><small>{{ item.description }}</small></p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No menu items available</p>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
