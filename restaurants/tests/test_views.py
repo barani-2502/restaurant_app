@@ -1,6 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
+<<<<<<< HEAD
 from restaurants.models import Restaurant, Cuisine, MenuItem
+=======
+from restaurants.models import Restaurant, Cuisine
+>>>>>>> b4cbac1 (tests: Add testcases for RestaurantListView)
 from django.core.paginator import Page
 
 class RestaurantListViewTests(TestCase):
