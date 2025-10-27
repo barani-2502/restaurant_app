@@ -57,14 +57,14 @@ class RestaurantDetailViewTests(TestCase):
 
         self.menu_item1 = MenuItem.objects.create(
             restaurant=self.restaurant,
-            name='Idli'
-            price=30.0
+            name='Idli',
+            price=30.0,
         )
 
         self.menu_item2 = MenuItem.objects.create(
             restaurant=self.restaurant,
-            name='Dosa'
-            price=60.0
+            name='Dosa',
+            price=60.0,
         )
 
     def test_detail_view_status_code(self):
