@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from restaurants.models import Restaurant, Cuisine
+from restaurants.models import Restaurant, Cuisine, MenuItem
 from django.core.paginator import Page
 
 class RestaurantListViewTests(TestCase):
@@ -41,4 +41,48 @@ class RestaurantListViewTests(TestCase):
         self.assertContains(response, "Restaurant0")
         self.assertContains(response, "Restaurant8")
 
+class RestaurantDetailViewTests(TestCase):
+    def setUp(self):
+        self.cuisine = Cuisine.objects.create(name="Indian")
+        self.restaurant = Restaurant.objects.create(
+            name= "ABC",
+            address = "pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+        self.restaurant.cuisines.add(self.cuisine)
 
+        self.menu_item1 = MenuItem.objects.create(
+            restaurant=self.restaurant,
+            name='Idli'
+            price=30.0
+        )
+
+        self.menu_item2 = MenuItem.objects.create(
+            restaurant=self.restaurant,
+            name='Dosa'
+            price=60.0
+        )
+
+    def test_detail_view_status_code(self):
+        url = reverse('restaurant-detail', args=[self.restaurant.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_detail_view_uses_correct_template(self):
+        url = reverse('restaurant-detail', args=[self.restaurant.id])
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'restaurants/restaurant_detail.html')
+
+    def test_detail_view_context_contains_restaurant(self):
+        url = reverse('restaurant-detail', args=[self.restaurant.id])
+        response = self.client.get(url)
+        self.assertEqual(response.context['restaurant'], self.restaurant)
+    
+    def test_invalid_restaurant_returns_404_error(self):
+        url = reverse('restaurant-detail', args=[999])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
