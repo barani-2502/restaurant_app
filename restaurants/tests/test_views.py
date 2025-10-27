@@ -1,0 +1,44 @@
+from django.test import TestCase
+from django.urls import reverse
+from restaurants.models import Restaurant, Cuisine
+from django.core.paginator import Page
+
+class RestaurantListViewTests(TestCase):
+    def setUp(self):
+        cuisine = Cuisine.objects.create(name="Indian")
+
+        for i in range(12):
+            restaurant = Restaurant.objects.create(
+                name=f"Restaurant{i}",
+                address = f'Address{i}',
+                city="chennai",
+                cost_for_two=500,
+                food_type="veg",
+                open_status=True,
+                spotlight=False,
+            )
+            restaurant.cuisines.add(cuisine)
+
+    def test_list_view_status_code(self):
+        response = self.client.get(reverse('restaurant-list'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_list_view_uses_correct_template(self):
+        response = self.client.get(reverse('restaurant-list'))
+
+    def test_list_view_pagination_is_nine(self):
+        response = self.client.get(reverse('restaurant-list'))
+        self.assertTrue(response.context['is_paginated'])
+        self.assertEqual(len(response.context['restaurants']), 9)
+
+    def test_second_page_contains_remaining_restaurants(self):
+        response = self.client.get(reverse('restaurant-list') + '?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['restaurants']), 3)
+
+    def test_list_view_displays_restaurant_names(self):
+        response = self.client.get(reverse('restaurant-list'))
+        self.assertContains(response, "Restaurant0")
+        self.assertContains(response, "Restaurant8")
+
+
