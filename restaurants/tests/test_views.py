@@ -125,34 +125,45 @@ class RegisterViewTests(TestCase):
         self.assertTemplateUsed(response, "registration/register.html")
         self.assertFalse(User.objects.filter(username='user').exists())
 
-class LoginAndLogoutViewTests(TestCase):
+class LoginViewTests(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="user", email="test@gmail.com", password="pass12345678")
+        self.username = "user"
+        self.password = "pass12345678"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.login_url = reverse('login')
     
     def test_login_page_renders(self):
         response = self.client.get(reverse('login'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "registration/login.html")
-    
-    def test_logout_page_redirects(self):
-        self.client.login(username='user', password='pass12345678' )
-        response = self.client.get(reverse('logout'), follow=True)
-        self.assertEqual(response.status_code, 200)
-        self.assertContains(response, reverse('home'))
 
     def test_login_with_valid_credentials(self):
-        response = self.client.post(reverse("login"), {"username": "user", "password": "pass12345678"}, follow=True)
+        data = {"username": self.username, "password": self.password}
+        response = self.client.post(self.login_url, data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context["user"].is_authenticated)
 
     def test_login_with_invalid_credentials(self):
-        response = self.client.post(reverse("login"), {"username": "user", "password": "wrong"}, follow=True)
+        data = {"username": self.username, "password": 'wrongpass'}
+        response = self.client.post(self.login_url, data, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.context["user"].is_authenticated)
 
-    def test_logout_functionality(self):
-        self.client.login(username='user', password='pass12345678' )
-        self.client.get(reverse('logout'), follow=True)
-        response = self.client.get(reverse("home"))
-        self.assertFalse(response.context["user"].is_authenticated)
+class LogoutViewTests(TestCase):
+    def setUp(self):
+        self.username = "user"
+        self.password = "pass12345678"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        self.logout_url = reverse('logout')
+        self.home_url = reverse('home')
 
+    def test_logout_page_redirects(self):
+        response = self.client.get(self.logout_url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Find My Bite")
+
+    def test_logout_functionality(self):
+        self.client.get(self.logout_url, follow=True)
+        response = self.client.get(self.home_url)
+        self.assertFalse(response.context["user"].is_authenticated)
