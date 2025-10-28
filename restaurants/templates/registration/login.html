@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="flex justify-center mt-16">
+    <div class="bg-white p-4 mb-4 rounded-lg border max-w-md w-full">
+        <h4 class="text-center mb-3">Login to Find My Bite</h4>
+        <hr>
+
+        <form method="post" class="px-2 py-2">
+            {% csrf_token %}
+
+            {% if form.errors %}
+                <div class="border border-red-300 text-red-700 px-3 py-2 rounded mb-4">
+                    {% if form.non_field_errors %}
+                        {% for error in form.non_field_errors %}
+                            <p class="text-sm">{{ error }}</p>
+                        {% endfor %}
+                    {% endif %}
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <p class="text-sm">
+                                <strong>{{ field.label }}:</strong> {{ error }}
+                            </p>
+                        {% endfor %}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {% for field in form %}
+                <div class="mb-3 text-center">
+                    {{ field.label_tag }}
+                    {{ field }}
+                </div>
+            {% endfor %}
+
+            <button type="submit" class="w-full bg-blue-600 text-white mt-2 py-2 rounded">
+                Login
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
