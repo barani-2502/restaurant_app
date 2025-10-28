@@ -167,3 +167,33 @@ class LogoutViewTests(TestCase):
         self.client.get(self.logout_url, follow=True)
         response = self.client.get(self.home_url)
         self.assertFalse(response.context["user"].is_authenticated)
+
+class PasswordChangeViewTests(TestCase):
+    def setUp(self):
+        self.username = "user"
+        self.password = "pass12345678"
+        self.user = User.objects.create_user(username=self.username, password=self.password)
+        self.client.login(username=self.username, password=self.password)
+        self.password_change_url = reverse('password_change')
+        self.password_change_done_url = reverse('password_change_done')
+    
+    def test_password_change_form_view_status_code(self):
+        response = self.client.get(self.password_change_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/password_change_form.html')
+
+    def test_password_change_done_view_status_code(self):
+        response = self.client.get(self.password_change_done_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/password_change_done.html')
+
+    def test_valid_password_change_redirects(self):
+        data = {'old_password': self.password, 'new_password1': 'newpass12345678', 'new_password2': 'newpass12345678'}
+        response = self.client.post(self.password_change_url, data)
+        self.assertRedirects(response, self.password_change_done_url)
+
+    def test_invalid_password_change_shows_error(self):
+        data = {'old_password': 'wrongpass', 'new_password1': 'pass', 'new_password2': 'pass'}
+        response = self.client.post(self.password_change_url, data)
+        self.assertContains(response, 'Password Change')
+
