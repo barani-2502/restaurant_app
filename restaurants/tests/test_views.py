@@ -195,5 +195,6 @@ class PasswordChangeViewTests(TestCase):
     def test_invalid_password_change_shows_error(self):
         data = {'old_password': 'wrongpass', 'new_password1': 'pass', 'new_password2': 'pass'}
         response = self.client.post(self.password_change_url, data)
-        self.assertContains(response, 'Password Change')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Your old password was entered incorrectly')
 
