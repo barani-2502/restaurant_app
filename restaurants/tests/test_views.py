@@ -1,11 +1,11 @@
 from django.test import TestCase
 from django.urls import reverse
-<<<<<<< HEAD
 from restaurants.models import Restaurant, Cuisine, MenuItem
-=======
-from restaurants.models import Restaurant, Cuisine
->>>>>>> b4cbac1 (tests: Add testcases for RestaurantListView)
 from django.core.paginator import Page
+from django.contrib.auth import get_user_model
+
+
+User = get_user_model()
 
 class RestaurantListViewTests(TestCase):
     def setUp(self):
@@ -90,3 +90,38 @@ class RestaurantDetailViewTests(TestCase):
         url = reverse('restaurant-detail', args=[999])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+class RegisterViewTests(TestCase):
+    def setUp(self):
+        self.url = reverse("register")
+
+    def test_register_page_loads_successfully(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "registration/register.html")
+        self.assertContains(response, "Register")
+
+    def test_register_creates_user_with_valid_data(self):
+        data = {
+            'username': "user",
+            'email': 'test@gamil.com', 
+            'password1': 'pass12345678',
+            'password2': 'pass12345678',
+        }
+
+        response = self.client.post(self.url, data, follow=True)
+        self.assertRedirects(response, reverse("home"))
+        self.assertTrue(User.objects.filter(username='user').exists())
+
+    def test_register_creates_user_with_invalid_data(self):
+        data = {
+            'username': "user",
+            'password1': 'pass12345678',
+            'password2': 'pass12341234',
+        }
+
+        response = self.client.post(self.url, data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "registration/register.html")
+        self.assertFalse(User.objects.filter(username='user').exists())
+
