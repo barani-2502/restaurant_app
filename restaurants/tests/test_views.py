@@ -247,8 +247,7 @@ class ProfileViewTests(TestCase):
 
     def test_profile_view_redirects_for_not_logged_in_user(self):
         response = self.client.get(self.profile_url)
-        self.assertEqual(response.status_code, 302)
-        self.assertIn('/login/', response.url)
+        self.assertRedirects(response, f"{reverse('login')}?next={self.profile_url}")
     
     def test_profile_view_loads_for_logged_in_user(self):
         self.client.login(username=self.username, password=self.password)

@@ -1,4 +1,4 @@
-from django.views.generic import ListView, DetailView, CreateView, View
+from django.views.generic import ListView, DetailView, CreateView, TemplateView
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -49,6 +49,5 @@ class RegisterView(CreateView):
         messages.success(self.request, "Account created successfully")
         return response
 
-class UserProfileView(LoginRequiredMixin, View):
-    def get(self, request):
-        return render(request, 'users/profile.html', {'user': request.user})
+class UserProfileView(LoginRequiredMixin, TemplateView):
+    template_name = 'users/profile.html'
