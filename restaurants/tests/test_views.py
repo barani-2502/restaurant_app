@@ -204,6 +204,7 @@ class PasswordResetViewTests(TestCase):
         self.username = "user"
         self.email = "user@gmail.com"
         self.password = "pass12345678"
+        User.objects.create_user(username=self.username, email=self.email, password=self.password)
         self.password_reset_url = reverse('password_reset')
         self.password_reset_done_url = reverse('password_reset_done')
         self.password_reset_confirm_url = reverse('password_reset_confirm', args=['uidb64', 'token'])
@@ -218,10 +219,10 @@ class PasswordResetViewTests(TestCase):
         response = self.client.post(self.password_reset_url, {'email': self.email})
         self.assertRedirects(response, self.password_reset_done_url)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertIn('Password Reset', mail.outbox[0].subject)
+        self.assertIn('Password reset', mail.outbox[0].subject)
         self.assertIn(self.email, mail.outbox[0].to)
 
-    def test_password_reset_email_sent_to_valid_user(self):
+    def test_password_reset_email_not_sent_to_invalid_user(self):
         response = self.client.post(self.password_reset_url, {'email': 'fake@fake.com'})
         self.assertRedirects(response, self.password_reset_done_url)
         self.assertEqual(len(mail.outbox), 0)
