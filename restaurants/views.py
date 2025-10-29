@@ -1,7 +1,9 @@
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, View
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
+from django.shortcuts import render
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant
 from .forms import CustomUserCreationForm
 
@@ -46,3 +48,7 @@ class RegisterView(CreateView):
         response = super().form_valid(form)
         messages.success(self.request, "Account created successfully")
         return response
+
+class UserProfileView(LoginRequiredMixin, View):
+    def get(self, request):
+        return render(request, 'users/profile.html', {'user': request.user})

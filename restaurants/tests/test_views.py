@@ -237,3 +237,24 @@ class PasswordResetViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/password_reset_complete.html')
 
+class ProfileViewTests(TestCase):
+    def setUp(self):
+        self.username = "user"
+        self.email = "user@gmail.com"
+        self.password = "pass12345678"
+        User.objects.create_user(username=self.username, email=self.email, password=self.password)
+        self.profile_url = reverse('profile')
+
+    def test_profile_view_redirects_for_not_logged_in_user(self):
+        response = self.client.get(self.profile_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
+    
+    def test_profile_view_loads_for_logged_in_user(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(self.profile_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/profile.html')
+        self.assertContains(response, 'Profile')
+        self.assertContains(response, 'user@gmail.com')
+
