@@ -3,6 +3,7 @@ from django.urls import reverse
 from restaurants.models import Restaurant, Cuisine, MenuItem
 from django.core.paginator import Page
 from django.contrib.auth import get_user_model
+from django.core import mail
 
 
 User = get_user_model()
@@ -197,4 +198,42 @@ class PasswordChangeViewTests(TestCase):
         response = self.client.post(self.password_change_url, data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Your old password was entered incorrectly')
+
+class PasswordResetViewTests(TestCase):
+    def setUp(self):
+        self.username = "user"
+        self.email = "user@gmail.com"
+        self.password = "pass12345678"
+        User.objects.create_user(username=self.username, email=self.email, password=self.password)
+        self.password_reset_url = reverse('password_reset')
+        self.password_reset_done_url = reverse('password_reset_done')
+        self.password_reset_confirm_url = reverse('password_reset_confirm', args=['uidb64', 'token'])
+        self.password_reset_complete_url = reverse('password_reset_complete')
+
+    def test_password_reset_page_loads(self):
+        response = self.client.get(self.password_reset_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/password_reset_form.html')
+
+    def test_password_reset_email_sent_to_valid_user(self):
+        response = self.client.post(self.password_reset_url, {'email': self.email})
+        self.assertRedirects(response, self.password_reset_done_url)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn('Password reset', mail.outbox[0].subject)
+        self.assertIn(self.email, mail.outbox[0].to)
+
+    def test_password_reset_email_not_sent_to_invalid_user(self):
+        response = self.client.post(self.password_reset_url, {'email': 'fake@fake.com'})
+        self.assertRedirects(response, self.password_reset_done_url)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_password_reset_done_view_loads(self):
+        response = self.client.get(self.password_reset_done_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/password_reset_done.html')
+
+    def test_password_reset_complete_view_loads(self):
+        response = self.client.get(self.password_reset_complete_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/password_reset_complete.html')
 
