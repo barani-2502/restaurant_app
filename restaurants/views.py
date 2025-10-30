@@ -1,11 +1,11 @@
-from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, View
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant
-from .forms import CustomUserCreationForm
+from .forms import CustomUserCreationForm, UserProfileForm
 
 
 class HomePageView(ListView):
@@ -51,3 +51,16 @@ class RegisterView(CreateView):
 
 class UserProfileView(LoginRequiredMixin, TemplateView):
     template_name = 'users/profile.html'
+
+class UserProfileEditView(LoginRequiredMixin, View):
+    def get(self, request):
+        form = UserProfileForm(instance=request.user)
+        return render(request, 'users/profile_edit.html', {'form': form })
+    
+    def post(self, request):
+        form = UserProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Your profile has been updated sucessfully")
+            return redirect('profile')
+        return render(request, 'users/profile_edit.html', {'form': form})
