@@ -2,7 +2,7 @@ from django.views.generic import ListView, DetailView, CreateView, TemplateView,
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant
 from .forms import CustomUserCreationForm, UserProfileForm
