@@ -17,7 +17,7 @@ class HomePageView(ListView):
     def get_queryset(self):
         return Restaurant.objects.filter(spotlight=True).prefetch_related('restaurant_photos')
 
-class RestaurantListView(ListView):
+class RestaurantListView(LoginRequiredMixin, ListView):
     model = Restaurant
     template_name = 'restaurants/restaurant_list.html'
     context_object_name = 'restaurants'
@@ -26,7 +26,7 @@ class RestaurantListView(ListView):
     def get_queryset(self):
         return Restaurant.objects.prefetch_related('restaurant_photos')
     
-class RestaurantDetailView(DetailView):
+class RestaurantDetailView(LoginRequiredMixin, DetailView):
     model = Restaurant
     template_name = 'restaurants/restaurant_detail.html'
     context_object_name = 'restaurant'
