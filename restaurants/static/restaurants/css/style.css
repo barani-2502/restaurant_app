@@ -28,5 +28,5 @@ input, select, textarea {
 }
 
 .navbar .dropdown-menu {
-  position: absolute !important;
+  position: absolute;
 }
