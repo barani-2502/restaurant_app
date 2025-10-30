@@ -257,3 +257,54 @@ class ProfileViewTests(TestCase):
         self.assertContains(response, 'Profile')
         self.assertContains(response, 'user@gmail.com')
 
+class ProfileEditViewTests(TestCase):
+    def setUp(self):
+        self.username = "user"
+        self.email = "user@gmail.com"
+        self.password = "pass12345678"
+        self.user = User.objects.create_user(username=self.username, email=self.email, password=self.password)
+        self.profile_edit_url = reverse('profile_edit')
+
+    def test_profile_edit_page_loads_successfully_for_logged_in_user(self):
+        self.client.login(username=self.username, password=self.password)
+        response = self.client.get(self.profile_edit_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/profile_edit.html')
+        self.assertContains(response, 'Save Changes')
+        self.assertContains(response, 'user@gmail.com')
+
+    def test_profile_edit_page_redirects_for_not_logged_in_user(self):
+        self.client.logout()
+        response = self.client.get(self.profile_edit_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
+
+    def test_valid_profile_edit_updates_profile_data(self):
+        self.client.login(username=self.username, password=self.password)
+        valid_data = {
+            'first_name': 'first',
+            'last_name': 'last',
+            'email': 'firstlast@findmybite.com',
+        }
+
+        response = self.client.post(self.profile_edit_url, valid_data, follow=True)
+        self.assertRedirects(response, reverse('profile'))
+        self.user.refresh_from_db()
+        self.assertEqual(self.user.first_name, 'first')
+        self.assertEqual(self.user.last_name, 'last')
+        self.assertEqual(self.user.email, 'firstlast@findmybite.com')
+
+
+    def test_invalid_profile_edit_shows_errors(self):
+        self.client.login(username=self.username, password=self.password)
+        invalid_data = {
+            'first_name': '',
+            'last_name': '',
+            'email': 'fake%',
+        }
+
+        response = self.client.post(self.profile_edit_url, invalid_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/profile_edit.html')
+        self.assertContains(response, 'Enter a valid email address')
+

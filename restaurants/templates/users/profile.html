@@ -12,7 +12,7 @@
         <p><strong>Last Name:</strong> {{ user.last_name }}</p>
         <p><strong>Email:</strong> {{ user.email }}</p>
         <hr>
-        <a href="#" class="inline-block text-white bg-blue-500 px-4 py-2 w-48 rounded text-center">Edit Profile</a>
+        <a href="{% url 'profile_edit' %}" class="inline-block text-white bg-blue-500 px-4 py-2 w-48 rounded text-center">Edit Profile</a>
         <a href="{% url 'password_change' %}" class="inline-block no-underline text-white w-48 bg-blue-500 mt-4 px-4 py-2 rounded">Change Password</a>
     </div>
     
