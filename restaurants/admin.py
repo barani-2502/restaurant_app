@@ -40,6 +40,6 @@ class CuisineAdmin(admin.ModelAdmin):
 
 @admin.register(Bookmark)
 class BookmarksAdmin(admin.ModelAdmin):
-    list_display = ('restaurant', 'user' )
-    search_fields = ('restaurant', 'user' )
+    list_display = ('restaurant', 'user')
+    search_fields = ('restaurant__name', 'user__username')
 
