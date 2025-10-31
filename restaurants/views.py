@@ -84,13 +84,12 @@ class UserBookmarksListView(LoginRequiredMixin, BookmarkedIdsMixin, ListView):
     
     
 class UserBookmarkToggleView(LoginRequiredMixin, View):
-    def get(self, request, restaurant_id):
+    def post(self, request, restaurant_id):
         restaurant = get_object_or_404(Restaurant, id=restaurant_id)
-        bookmark = Bookmark.objects.filter(user=request.user, restaurant=restaurant)
-
-        if bookmark.exists():
+        bookmark, created = Bookmark.objects.get_or_create(
+            user=request.user, restaurant=restaurant
+        )
+        if not created:
             bookmark.delete()
-        else:
-            Bookmark.objects.create(user=request.user, restaurant=restaurant)
         
-        return redirect('bookmarks_list')
+        return redirect(request.META.get('HTTP_REFERER', 'bookmarks_list'))
