@@ -7,8 +7,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Bookmark
 from .forms import CustomUserCreationForm, UserProfileForm
 
+class BookmarkedIdsMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['bookmarked_ids'] = set(self.request.user.bookmarks.values_list('restaurant_id', flat=True))
+        else:
+            context['bookmarked_ids'] = set()
+        return context
 
-class HomePageView(ListView):
+
+class HomePageView(BookmarkedIdsMixin, ListView):
     model = Restaurant
     template_name = 'restaurants/home.html'
     context_object_name = 'spotlighted_restaurants'
@@ -17,7 +26,7 @@ class HomePageView(ListView):
     def get_queryset(self):
         return Restaurant.objects.filter(spotlight=True).prefetch_related('restaurant_photos')
 
-class RestaurantListView(LoginRequiredMixin, ListView):
+class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, ListView):
     model = Restaurant
     template_name = 'restaurants/restaurant_list.html'
     context_object_name = 'restaurants'
@@ -26,7 +35,7 @@ class RestaurantListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Restaurant.objects.prefetch_related('restaurant_photos')
     
-class RestaurantDetailView(LoginRequiredMixin, DetailView):
+class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, DetailView):
     model = Restaurant
     template_name = 'restaurants/restaurant_detail.html'
     context_object_name = 'restaurant'
@@ -64,7 +73,7 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Your profile has been updated successfully")
         return super().form_valid(form)
     
-class UserBookmarksListView(LoginRequiredMixin, ListView):
+class UserBookmarksListView(LoginRequiredMixin, BookmarkedIdsMixin, ListView):
     model = Bookmark
     template_name = 'users/bookmarks_list.html'
     context_object_name = 'bookmarked_restaurants'
@@ -73,10 +82,6 @@ class UserBookmarksListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         return Bookmark.objects.filter(user=self.request.user).select_related('restaurant')
     
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['bookmarked_ids'] = self.request.user.bookmarks.values_list('restaurant', flat=True)
-        return context
     
 class UserBookmarkToggleView(LoginRequiredMixin, View):
     def get(self, request, restaurant_id):
