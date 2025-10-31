@@ -1,10 +1,10 @@
-from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, View
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Restaurant
+from .models import Restaurant, Bookmark
 from .forms import CustomUserCreationForm, UserProfileForm
 
 
@@ -63,3 +63,29 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Your profile has been updated successfully")
         return super().form_valid(form)
+    
+class UserBookmarksListView(LoginRequiredMixin, ListView):
+    model = Bookmark
+    template_name = 'users/bookmarks_list.html'
+    context_object_name = 'bookmarked_restaurants'
+    paginate_by = 9
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(user=self.request.user).select_related('restaurant')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['bookmarked_ids'] = self.request.user.bookmarks.values_list('restaurant', flat=True)
+        return context
+    
+class UserBookmarkToggleView(LoginRequiredMixin, View):
+    def get(self, request, restaurant_id):
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+        bookmark = Bookmark.objects.filter(user=request.user, restaurant=restaurant)
+
+        if bookmark.exists():
+            bookmark.delete()
+        else:
+            Bookmark.objects.create(user=request.user, restaurant=restaurant)
+        
+        return redirect('bookmarks_list')
