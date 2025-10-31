@@ -10,6 +10,8 @@ User = get_user_model()
 
 class RestaurantListViewTests(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.client.login(username='user', password='pass12345678')
         cuisine = Cuisine.objects.create(name="Indian")
 
         for i in range(12):
@@ -48,6 +50,8 @@ class RestaurantListViewTests(TestCase):
 
 class RestaurantDetailViewTests(TestCase):
     def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.client.login(username='user', password='pass12345678')
         self.cuisine = Cuisine.objects.create(name="Indian")
         self.restaurant = Restaurant.objects.create(
             name= "ABC",
