@@ -367,6 +367,7 @@ class BookmarkToggleViewTests(TestCase):
 
     def test_bookmark_toggle_creates_bookmark_if_not_present(self):
         self.client.login(username='user', password='pass12345678')
+        self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
         response = self.client.post(self.toggle_url)
         self.assertRedirects(response, self.bookmarks_list_url)
         self.assertTrue(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
@@ -374,6 +375,7 @@ class BookmarkToggleViewTests(TestCase):
     def test_bookmark_toggle_deletes_bookmark_if_already_present(self):
         self.client.login(username='user', password='pass12345678')
         Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
+        self.assertTrue(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
         response = self.client.post(self.toggle_url)
         self.assertRedirects(response, self.bookmarks_list_url)
         self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
