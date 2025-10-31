@@ -27,7 +27,7 @@
             </a>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userMenu">
               <li><a class="dropdown-item" href="{% url 'profile' %}">Profile</a></li>
-              <li><a class="dropdown-item" href="#">Bookmarks</a></li>
+              <li><a class="dropdown-item" href="{% url 'bookmarks_list' %}">Bookmarks</a></li>
               <li><a class="dropdown-item" href="#">Visited</a></li>
               <li><hr class="dropdown-divider"></li>
               <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
