@@ -349,3 +349,38 @@ class BookmarkViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No restaurants found.")
         self.assertEqual(len(response.context['bookmarked_restaurants']), 0)
+
+class BookmarkToggleViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.restaurant = Restaurant.objects.create(
+            name="A2B",
+            address = "Pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+        self.bookmarks_list_url = reverse('bookmarks_list')
+        self.toggle_url = reverse('bookmark_toggle', args=[self.restaurant.id])
+
+    def test_bookmark_toggle_creates_bookmark_if_not_present(self):
+        self.client.login(username='user', password='pass12345678')
+        self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
+        response = self.client.post(self.toggle_url)
+        self.assertRedirects(response, self.bookmarks_list_url)
+        self.assertTrue(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
+
+    def test_bookmark_toggle_deletes_bookmark_if_already_present(self):
+        self.client.login(username='user', password='pass12345678')
+        Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
+        self.assertTrue(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
+        response = self.client.post(self.toggle_url)
+        self.assertRedirects(response, self.bookmarks_list_url)
+        self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
+
+    def test_redirect_if_not_logged_in(self):
+        response = self.client.post(self.toggle_url)
+        login_url = reverse('login')
+        self.assertRedirects(response, f'{login_url}?next={self.toggle_url}')
