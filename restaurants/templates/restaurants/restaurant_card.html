@@ -8,6 +8,7 @@
             <h5>{{ restaurant.city }}</h5>         
             <form action="{% url 'bookmark_toggle' restaurant.id %}" method="post" class="inline">
                 {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.path }}">
                 <button type="submit" class="hover:text-red-600 bg-transparent border-0 p-0">
                     {% if restaurant.id in bookmarked_ids %}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" class="w-6 h-6 inline">

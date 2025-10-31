@@ -1,4 +1,5 @@
 from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, View
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy
 from django.contrib import messages
@@ -89,6 +90,10 @@ class UserBookmarkToggleView(LoginRequiredMixin, View):
         )
         if not created:
             bookmark.delete()
+
+        next_url = request.POST.get('next', 'bookmarks_list')
+        if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+            next_url = 'bookmarks_list'
         
-        return redirect('bookmarks_list')
+        return redirect(next_url)
     
