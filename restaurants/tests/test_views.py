@@ -346,7 +346,7 @@ class BookmarkViewTests(TestCase):
     def test_bookmark_toggle_creates_bookmark_if_not_present(self):
         self.client.login(username='user', password='pass12345678')
         url = reverse('bookmark_toggle', args=[self.restaurant.id])
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertRedirects(response, self.bookmarks_list_url)
         self.assertTrue(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
 
@@ -354,7 +354,7 @@ class BookmarkViewTests(TestCase):
         self.client.login(username='user', password='pass12345678')
         Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
         url = reverse('bookmark_toggle', args=[self.restaurant.id])
-        response = self.client.get(url)
+        response = self.client.post(url)
         self.assertRedirects(response, self.bookmarks_list_url)
         self.assertFalse(Bookmark.objects.filter(user=self.user, restaurant=self.restaurant).exists())
 
