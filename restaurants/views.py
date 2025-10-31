@@ -71,5 +71,5 @@ class UserBookmarksListView(LoginRequiredMixin, ListView):
     paginate_by = 9
 
     def get_queryset(self):
-        return Bookmark.objects.filter(user=self.request.user).select_related('restaurant')
+        return Bookmark.objects.filter(user=self.request.user).select_related('restaurant').prefetch_related('restaurant__restaurant_photos')
     

@@ -342,3 +342,10 @@ class BookmarkViewTests(TestCase):
         self.assertTemplateUsed(response, 'users/bookmarks_list.html')
         self.assertContains(response, self.restaurant.name)
         self.assertEqual(len(response.context['bookmarked_restaurants']), 1)
+
+    def test_bookmark_list_empty_state(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(self.bookmarks_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No restaurants found.")
+        self.assertEqual(len(response.context['bookmarked_restaurants']), 0)

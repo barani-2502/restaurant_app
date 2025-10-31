@@ -9,6 +9,10 @@
     <div class="row">
         {% for bookmark in bookmarked_restaurants %}
             {% include 'restaurants/restaurant_card.html' with restaurant=bookmark.restaurant %}
+        {% empty %}
+        <div class="text-gray-600">
+            <p>No restaurants found.</p>
+        </div>
         {% endfor %}
     </div>
 </div>
