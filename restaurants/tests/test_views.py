@@ -412,7 +412,7 @@ class VisitViewTests(TestCase):
         self.assertTemplateUsed(response, 'users/visited_restaurants_list.html')
         self.assertContains(response, self.restaurant.name)
 
-    def test_bookmark_list_empty_state(self):
+    def test_visited_restaurants_list_empty_state(self):
         self.client.login(username='user', password='pass12345678')
         response = self.client.get(self.visited_restaurants_list_url)
         self.assertEqual(response.status_code, 200)

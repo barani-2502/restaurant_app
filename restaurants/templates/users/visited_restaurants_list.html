@@ -5,7 +5,7 @@
 {% block content %}
 
 <div class="container">
-    <h1>Restaurant's I have visited</h1>
+    <h1>Restaurants I have visited</h1>
     <div class="row">
         {% for visit in visited_restaurants %}
             {% include 'restaurants/restaurant_card.html' with restaurant=visit.restaurant bookmarked_ids=bookmarked_ids %}
