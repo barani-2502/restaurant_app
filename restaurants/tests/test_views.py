@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark
+from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark, Visit
 from django.core.paginator import Page
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -384,3 +384,37 @@ class BookmarkToggleViewTests(TestCase):
         response = self.client.post(self.toggle_url)
         login_url = reverse('login')
         self.assertRedirects(response, f'{login_url}?next={self.toggle_url}')
+
+class VisitViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.restaurant = Restaurant.objects.create(
+            name="A2B",
+            address = "Pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+        self.visited_restaurants_list_url = reverse('visited_restaurants_list')
+
+    def test_visited_restaurants_view_requires_login(self):
+        response = self.client.get(self.visited_restaurants_list_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/accounts/login/', response.url)
+    
+    def test_visited_restaurants_view_displays_user_visits(self):
+        self.client.login(username='user', password='pass12345678')
+        Visit.objects.create(user=self.user, restaurant=self.restaurant)
+        response = self.client.get(self.visited_restaurants_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/visited_restaurants_list.html')
+        self.assertContains(response, self.restaurant.name)
+
+    def test_bookmark_list_empty_state(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(self.visited_restaurants_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No restaurants found.")
+        self.assertEqual(len(response.context['visited_restaurants']), 0)
