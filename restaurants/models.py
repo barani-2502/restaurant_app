@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
+from django.contrib.auth.models import User
 
 class Cuisine(models.Model):
     """
@@ -148,3 +149,18 @@ class MenuItemPhoto(models.Model):
 
     def __str__(self):
         return f"Photo of {self.menu_item.name}"
+    
+class Bookmark(models.Model):
+    """
+    Stores the restaurants bookmarked by a user
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bookmarks')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='bookmarked_by_user')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'restaurant')
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user.username} bookmarked {self.restaurant.name}"
