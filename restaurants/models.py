@@ -167,10 +167,10 @@ class Bookmark(models.Model):
 
 class Visit(models.Model):
     """
-    To store whether an user has visitied a restaurant or not
+    To store whether an user has visited a restaurant or not
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='visits')
-    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='visits')
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='visited_by_user')
     visited = models.DateTimeField(auto_now_add=True)
 
     class Meta:
