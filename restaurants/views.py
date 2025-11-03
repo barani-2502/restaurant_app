@@ -91,7 +91,7 @@ class UserBookmarkToggleView(LoginRequiredMixin, View):
         if not created:
             bookmark.delete()
 
-        next_url = request.POST.get('next', 'bookmarks_list')
+        next_url = request.POST.get('next') or ('bookmarks_list')
         if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
             next_url = 'bookmarks_list'
         

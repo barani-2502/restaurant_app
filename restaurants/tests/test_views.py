@@ -384,3 +384,9 @@ class BookmarkToggleViewTests(TestCase):
         response = self.client.post(self.toggle_url)
         login_url = reverse('login')
         self.assertRedirects(response, f'{login_url}?next={self.toggle_url}')
+
+    def test_bookmark_toggle_redirects_to_next_url(self):
+        self.client.login(username='user', password='pass12345678')
+        home_url = reverse('home')
+        response = self.client.post(self.toggle_url, {'next': home_url})
+        self.assertRedirects(response, home_url)
