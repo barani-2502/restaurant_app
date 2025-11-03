@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.contrib import messages
 from django.shortcuts import render
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Restaurant
+from .models import Restaurant, Bookmark
 from .forms import CustomUserCreationForm, UserProfileForm
 
 
@@ -63,3 +63,12 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         messages.success(self.request, "Your profile has been updated successfully")
         return super().form_valid(form)
+
+class UserBookmarksListView(LoginRequiredMixin, ListView):
+    model = Bookmark
+    template_name = 'users/bookmarks_list.html'
+    context_object_name = 'bookmarked_restaurants'
+    paginate_by = 9
+
+    def get_queryset(self):
+        return Bookmark.objects.filter(user=self.request.user).select_related('restaurant').prefetch_related('restaurant__restaurant_photos')

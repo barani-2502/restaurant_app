@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from restaurants.models import Restaurant, Cuisine, MenuItem
+from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark
 from django.core.paginator import Page
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -312,3 +312,40 @@ class ProfileEditViewTests(TestCase):
         self.assertTemplateUsed(response, 'users/profile_edit.html')
         self.assertContains(response, 'Enter a valid email address')
 
+class BookmarkViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='user',
+            password='pass12345678',
+        )
+        self.restaurant = Restaurant.objects.create(
+            name="ABC",
+            address="pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+        self.bookmarks_list_url = reverse('bookmarks_list')
+
+    def test_bookmark_list_view_requires_login(self):
+        response = self.client.get(self.bookmarks_list_url)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith('/accounts/login/'))
+
+    def test_bookmark_list_view_displays_user_bookmarks(self):
+        self.client.login(username='user', password='pass12345678')
+        Bookmark.objects.create(user=self.user, restaurant=self.restaurant)
+        response = self.client.get(self.bookmarks_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/bookmarks_list.html')
+        self.assertContains(response, self.restaurant.name)
+        self.assertEqual(len(response.context['bookmarked_restaurants']), 1)
+
+    def test_bookmark_list_empty_state(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(self.bookmarks_list_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No restaurants found.")
+        self.assertEqual(len(response.context['bookmarked_restaurants']), 0)
