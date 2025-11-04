@@ -16,8 +16,17 @@ class BookmarkedIdsMixin:
         else:
             context['bookmarked_ids'] = set()
         return context
+    
+class VisitedIdsMixin:
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.request.user.is_authenticated:
+            context['visited_ids'] = set(self.request.user.visits.values_list('restaurant_id', flat=True))
+        else:
+            context['visited_ids'] = set()
+        return context
 
-class HomePageView(BookmarkedIdsMixin, ListView):
+class HomePageView(BookmarkedIdsMixin, VisitedIdsMixin, ListView):
     model = Restaurant
     template_name = 'restaurants/home.html'
     context_object_name = 'spotlighted_restaurants'
@@ -26,7 +35,7 @@ class HomePageView(BookmarkedIdsMixin, ListView):
     def get_queryset(self):
         return Restaurant.objects.filter(spotlight=True).prefetch_related('restaurant_photos')
 
-class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, ListView):
+class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, ListView):
     model = Restaurant
     template_name = 'restaurants/restaurant_list.html'
     context_object_name = 'restaurants'
@@ -35,7 +44,7 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, ListView):
     def get_queryset(self):
         return Restaurant.objects.prefetch_related('restaurant_photos')
     
-class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, DetailView):
+class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, DetailView):
     model = Restaurant
     template_name = 'restaurants/restaurant_detail.html'
     context_object_name = 'restaurant'
@@ -73,7 +82,7 @@ class UserProfileEditView(LoginRequiredMixin, UpdateView):
         messages.success(self.request, "Your profile has been updated successfully")
         return super().form_valid(form)
 
-class UserBookmarksListView(LoginRequiredMixin, BookmarkedIdsMixin, ListView):
+class UserBookmarksListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, ListView):
     model = Bookmark
     template_name = 'users/bookmarks_list.html'
     context_object_name = 'bookmarked_restaurants'
@@ -97,7 +106,7 @@ class UserBookmarkToggleView(LoginRequiredMixin, View):
         
         return redirect(next_url)
     
-class UserVisitedRestaurantsListView(BookmarkedIdsMixin, LoginRequiredMixin, ListView):
+class UserVisitedRestaurantsListView(LoginRequiredMixin, BookmarkedIdsMixin,  VisitedIdsMixin, ListView):
     model = Visit
     template_name = 'users/visited_restaurants_list.html'
     context_object_name = 'visited_restaurants'
@@ -105,3 +114,20 @@ class UserVisitedRestaurantsListView(BookmarkedIdsMixin, LoginRequiredMixin, Lis
 
     def get_queryset(self):
         return Visit.objects.filter(user = self.request.user).select_related('restaurant').prefetch_related('restaurant__restaurant_photos')
+    
+class UserVisitedRestaurantsToggleView(LoginRequiredMixin, View):
+    def post(self, request, restaurant_id):
+        restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+        visit, created = Visit.objects.get_or_create(
+            user=request.user, restaurant=restaurant
+        )
+
+        if not created:
+            visit.delete()
+
+        next_url = request.POST.get('next') or reverse_lazy('visited_restaurants_list')
+        if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+            next_url = reverse_lazy('visited_restaurants_list')
+
+        return redirect(next_url)
+
