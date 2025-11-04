@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Restaurant, Bookmark
+from .models import Restaurant, Bookmark, Visit
 from .forms import CustomUserCreationForm, UserProfileForm
 
 class BookmarkedIdsMixin:
@@ -96,3 +96,12 @@ class UserBookmarkToggleView(LoginRequiredMixin, View):
             next_url = reverse('bookmarks_list')
         
         return redirect(next_url)
+    
+class UserVisitedRestaurantsListView(BookmarkedIdsMixin, LoginRequiredMixin, ListView):
+    model = Visit
+    template_name = 'users/visited_restaurants_list.html'
+    context_object_name = 'visited_restaurants'
+    paginate_by = 9
+
+    def get_queryset(self):
+        return Visit.objects.filter(user = self.request.user).select_related('restaurant').prefetch_related('restaurant__restaurant_photos')
