@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Review{% endblock %}
+
+{% block content %}
+<div class="flex justify-center mt-16">
+    <div class="bg-white p-4 mb-16 rounded-lg border max-w-md w-full">
+        <h4 class="text-center mb-3 text-xl font-semibold">Delete Review</h4>
+        <hr class="mb-4">
+
+        <p class="mb-4">
+            Are you sure you want to delete your review for {{ object.restaurant.name }}?
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="w-full bg-red-600 text-white py-2 rounded mb-2">Delete review</button>
+            <a href="{% url 'restaurant-detail' object.restaurant.pk %}" class="w-full inline-block text-center text-white bg-blue-500 text-gray-800 py-2 rounded">No</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

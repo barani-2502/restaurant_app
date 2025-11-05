@@ -1,12 +1,12 @@
-from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, View
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, UpdateView, DeleteView, View
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.contrib.auth.forms import UserCreationForm
 from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Restaurant, Bookmark, Visit
-from .forms import CustomUserCreationForm, UserProfileForm
+from .models import Restaurant, Bookmark, Visit, Review
+from .forms import CustomUserCreationForm, UserProfileForm, ReviewForm
 
 class BookmarkedIdsMixin:
     def get_context_data(self, **kwargs):
@@ -55,6 +55,14 @@ class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMix
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['menu_items'] = self.object.menu_items.prefetch_related('menu_item_photos').all()
+        restaurant = self.object
+        user_review = None
+        if self.request.user.is_authenticated:
+            user_review = Review.objects.filter(
+                restaurant=restaurant,
+                user=self.request.user
+            ).first()
+        context['user_review'] = user_review
         return context
 
 class RegisterView(CreateView):
@@ -131,3 +139,49 @@ class UserVisitedRestaurantsToggleView(LoginRequiredMixin, View):
 
         return redirect(next_url)
 
+class ReviewCreateView(LoginRequiredMixin, CreateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'restaurants/review.html'
+
+    def get_restaurant(self):
+        return get_object_or_404(Restaurant, pk=self.kwargs['pk'])
+
+    def form_valid(self, form):
+        form.instance.restaurant = self.get_restaurant()
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        restaurant = self.get_restaurant()
+        context['restaurant'] = restaurant
+        existing_review = Review.objects.filter(user=self.request.user, restaurant=restaurant).first()
+        context['has_review'] = bool(existing_review)
+        return context
+    
+    def get_success_url(self):
+        return reverse('restaurant-detail', kwargs={'pk': self.object.restaurant.pk})
+
+class ReviewUpdateView(LoginRequiredMixin, UpdateView):
+    model = Review
+    form_class = ReviewForm
+    template_name = 'restaurants/review.html'
+
+    def get_queryset(self):
+        return Review.objects.filter(user=self.request.user)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['restaurant'] = self.object.restaurant
+        return context
+
+    def get_success_url(self):
+        return reverse('restaurant-detail', kwargs={'pk': self.object.restaurant.pk})
+
+class ReviewDeleteView(LoginRequiredMixin, DeleteView):
+    model = Review
+    template_name = 'restaurants/review_delete_confirm.html'
+
+    def get_success_url(self):
+        return reverse_lazy('restaurant-detail', kwargs={'pk': self.object.restaurant.pk})

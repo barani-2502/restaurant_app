@@ -61,6 +61,43 @@
             <p>No menu items available</p>
         {% endif %}
     </div>
+
+    <div class="lg:col-span-3">
+        <h3>{{ restaurant.name }} - Reviews</h3>
+
+        <hr>
+
+        {% for review in restaurant.reviewed_by_user.all %}
+            <div>
+                <strong>{{ review.user.username }}</strong> rated {{ review.rating }}★
+                <p><strong>{{ review.title }}</strong></p>
+                <p>{{ review.comment }}</p>
+
+                {% if review.user == user %}
+                    <a href="{% url 'edit_review' review.pk %}" 
+                    class="inline-block text-white bg-blue-500 px-2 py-1 w-24 rounded text-center">
+                        Edit
+                    </a> 
+                    <a href="{% url 'delete_review' review.pk %}" 
+                    class="inline-block text-white bg-red-500 px-2 py-1 w-24 rounded text-center">
+                        Delete
+                    </a>
+                {% endif %}
+                <hr>
+            </div>
+        {% empty %}
+            <p>No reviews yet. Be the first to review!</p>
+        {% endfor %}
+
+        {% if user.is_authenticated %}
+            {% if not user_review %}
+                <a href="{% url 'add_review' restaurant.pk %}" 
+                class="inline-block text-white bg-blue-500 px-4 py-2 w-48 rounded text-center">
+                Write a Review
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>   
 </div>
 
 {% endblock %}
