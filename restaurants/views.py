@@ -183,5 +183,8 @@ class ReviewDeleteView(LoginRequiredMixin, DeleteView):
     model = Review
     template_name = 'restaurants/review_delete_confirm.html'
 
+    def get_queryset(self):
+        return self.model.objects.filter(user=self.request.user)
+
     def get_success_url(self):
         return reverse_lazy('restaurant-detail', kwargs={'pk': self.object.restaurant.pk})
