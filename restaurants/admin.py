@@ -49,6 +49,6 @@ class VisitAdmin(admin.ModelAdmin):
     search_fields = ('restaurant__name', 'user__username')
 
 @admin.register(Review)
-class VisitAdmin(admin.ModelAdmin):
+class ReviewAdmin(admin.ModelAdmin):
     list_display = ('restaurant', 'rating', 'title', 'user')
     search_fields = ('restaurant__name', 'user__username')
