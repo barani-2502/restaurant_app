@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Restaurant, MenuItem, MenuItemPhoto, RestaurantPhoto, Cuisine, Bookmark, Visit
+from .models import Restaurant, MenuItem, MenuItemPhoto, RestaurantPhoto, Cuisine, Bookmark, Visit, Review
 
 class MenuItemPhotoInline(admin.TabularInline):
     model = MenuItemPhoto
@@ -46,4 +46,9 @@ class BookmarksAdmin(admin.ModelAdmin):
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
     list_display = ('restaurant', 'user')
+    search_fields = ('restaurant__name', 'user__username')
+
+@admin.register(Review)
+class VisitAdmin(admin.ModelAdmin):
+    list_display = ('restaurant', 'rating', 'title', 'user')
     search_fields = ('restaurant__name', 'user__username')
