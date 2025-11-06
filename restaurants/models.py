@@ -179,3 +179,31 @@ class Visit(models.Model):
 
     def __str__(self):
         return f'{self.user.username} visited {self.restaurant.name}'
+    
+class Review(models.Model):
+    """
+    Represents a record of user review and rating of a restaurant
+    """
+    class Rating(models.IntegerChoices):
+        ONE = 1
+        TWO = 2
+        THREE = 3
+        FOUR = 4
+        FIVE = 5
+
+    restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='reviewed_by_user')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='reviews')
+    rating = models.PositiveSmallIntegerField(choices=Rating.choices, default=Rating.ONE)
+    title = models.CharField(max_length=150, blank=True)
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        unique_together = ('user', 'restaurant')
+        ordering = ['-updated_at', '-created_at']
+
+    def __str__(self):
+        if self.title:
+            return f"{self.title} - {self.rating} by {self.user.username} for {self.restaurant.name}"
+        return f"{self.rating} by {self.user.username} for {self.restaurant.name}"
