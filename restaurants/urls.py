@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import HomePageView, RestaurantListView, RestaurantDetailView, RegisterView, UserProfileView, UserProfileEditView, UserBookmarksListView, UserBookmarkToggleView, UserVisitedRestaurantsListView
+from .views import HomePageView, RestaurantListView, RestaurantDetailView, RegisterView, UserProfileView, UserProfileEditView, UserBookmarksListView, UserBookmarkToggleView, UserVisitedRestaurantsListView, UserVisitedRestaurantsToggleView
 
 urlpatterns = [
     path('', HomePageView.as_view(), name='home'),
@@ -11,4 +11,5 @@ urlpatterns = [
     path('bookmarks/', UserBookmarksListView.as_view(), name='bookmarks_list'),
     path('bookmarks/toggle/<int:restaurant_id>/', UserBookmarkToggleView.as_view(), name='bookmark_toggle'),
     path('visits/', UserVisitedRestaurantsListView.as_view(), name='visited_restaurants_list'),
+    path('visits/toggle/<int:restaurant_id>/', UserVisitedRestaurantsToggleView.as_view(), name='visited_toggle'),
 ]
