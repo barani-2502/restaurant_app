@@ -4,7 +4,14 @@
             <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
         {% endif %}
         <div class="card-body">
-            <h4><a href="{% url 'restaurant-detail' pk=restaurant.id %}">{{ restaurant.name }}</a></h4>
+            <div class="flex items-center justify-between">
+                <h4>
+                    <a href="{% url 'restaurant-detail' pk=restaurant.id %}">{{ restaurant.name }}</a>
+                </h4>
+                <p class="text-sm">
+                    {{ restaurant.average_rating|default:0|floatformat:1 }}★ | {{ restaurant.total_reviews|default:0 }} Reviews
+                </p>
+            </div>
             <h5>{{ restaurant.city }}</h5>
             <div class="mt-2 flex items-center justify-between">
                 <form action="{% url 'bookmark_toggle' restaurant.id %}" method="post">
