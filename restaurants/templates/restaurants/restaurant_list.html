@@ -3,7 +3,27 @@
 {% block content %}
 <h2>All Restaurants</h2>
 
-<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<form method="get">
+<input type="text" name="city" placeholder="City" value="{{ request.GET.city }}">
+<input type="text" name="cuisine" placeholder="Cuisine" value="{{ request.GET.cuisines }}">
+<select name="food_type">
+    <option value="">All</option>
+    <option value="Veg">Veg</option>
+    <option value="Non-Veg">Non-Veg</option>
+    <option value="Vegan">Vegan</option>
+</select>
+<select name="sort">
+    <option value="">Sort by</option>
+    <option value="cost_asc" {% if request.GET.sort == 'cost_asc' %}selected{% endif %}>Cost ↑</option>
+    <option value="cost_desc" {% if request.GET.sort == 'cost_desc' %}selected{% endif %}>Cost ↓</option>
+    <option value="rating_desc" {% if request.GET.sort == 'rating_desc' %}selected{% endif %}>Rating ↓</option>
+    <option value="rating_asc" {% if request.GET.sort == 'rating_asc' %}selected{% endif %}>Rating ↑</option>
+</select>
+<button type="submit" class="block w-24 bg-blue-600 text-white py-1 rounded mt-2 mb-2 text-center">Apply</button>
+</form>
+
+
+<div class="row">
     {% for restaurant in restaurants %}
         {% include 'restaurants/restaurant_card.html' %}
     {% empty %}
@@ -18,7 +38,6 @@
         <ul class="inline-flex items-center space-x-2">
             {% if page_obj.has_previous %}
                 <li>
-                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
                     <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
                 </li>
             {% endif %}

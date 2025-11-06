@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Bookmark, Visit, Review
 from .forms import CustomUserCreationForm, UserProfileForm, ReviewForm
+from django.db.models import Avg, Count
 
 class BookmarkedIdsMixin:
     def get_context_data(self, **kwargs):
@@ -42,15 +43,53 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin
     paginate_by = 9
 
     def get_queryset(self):
-        return Restaurant.objects.prefetch_related('restaurant_photos')
+        queryset = Restaurant.objects.prefetch_related('restaurant_photos').annotate(
+            average_rating=Avg('reviewed_by_user__rating'),
+            total_reviews=Count('reviewed_by_user', distinct=True)
+        )
+        city = self.request.GET.get('city')
+        cuisines = self.request.GET.get('cuisines')
+        food_type = self.request.GET.get('food_type')
+        is_open = self.request.GET.get('open')
+
+        if city:
+            queryset = queryset.filter(city__icontains=city)
+        if cuisines:
+            queryset = queryset.filter(cuisine__icontains=cuisines)
+        if food_type:
+            queryset = queryset.filter(veg_type__iexact=food_type.lower())
+        if is_open in ['true', 'false']:
+            queryset = queryset.filter(is_open=(is_open == 'true'))
+
+        sort_by = self.request.GET.get('sort')
+
+        if sort_by == 'cost_asc':
+            queryset = queryset.order_by('cost_for_two')
+        elif sort_by == 'cost_desc':
+            queryset = queryset.order_by('-cost_for_two')
+        elif sort_by == 'rating_asc':
+            queryset = queryset.order_by('average_rating')
+        elif sort_by == 'rating_desc':
+            queryset = queryset.order_by('-average_rating')
+
+        return queryset
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['selected_filters'] = self.request.GET
+        return context
+            
 class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, DetailView):
     model = Restaurant
     template_name = 'restaurants/restaurant_detail.html'
     context_object_name = 'restaurant'
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('restaurant_photos', 'cuisines')
+        queryset = Restaurant.objects.prefetch_related('restaurant_photos', 'cuisines').annotate(
+            average_rating = Avg('reviewed_by_user__rating'),
+            total_reviews = Count('reviewed_by_user', distinct=True)
+        )
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
