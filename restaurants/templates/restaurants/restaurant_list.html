@@ -4,8 +4,9 @@
 <h2>All Restaurants</h2>
 
 <form method="get">
+<input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}">
 <input type="text" name="city" placeholder="City" value="{{ request.GET.city }}">
-<input type="text" name="cuisine" placeholder="Cuisine" value="{{ request.GET.cuisines }}">
+<input type="text" name="cuisines" placeholder="Cuisine" value="{{ request.GET.cuisines }}">
 <select name="food_type">
     <option value="">All</option>
     <option value="Veg">Veg</option>

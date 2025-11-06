@@ -47,17 +47,20 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin
             average_rating=Avg('reviewed_by_user__rating'),
             total_reviews=Count('reviewed_by_user', distinct=True)
         )
+        name = self.request.GET.get('name')
         city = self.request.GET.get('city')
         cuisines = self.request.GET.get('cuisines')
         food_type = self.request.GET.get('food_type')
         is_open = self.request.GET.get('open')
 
+        if name:
+            queryset = queryset.filter(name__icontains=name)
         if city:
             queryset = queryset.filter(city__icontains=city)
         if cuisines:
-            queryset = queryset.filter(cuisine__icontains=cuisines)
+            queryset = queryset.filter(cuisines__name__icontains=cuisines)
         if food_type:
-            queryset = queryset.filter(veg_type__iexact=food_type.lower())
+            queryset = queryset.filter(food_type__iexact=food_type.lower())
         if is_open in ['true', 'false']:
             queryset = queryset.filter(is_open=(is_open == 'true'))
 
