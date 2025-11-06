@@ -66,14 +66,15 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin
 
         sort_by = self.request.GET.get('sort')
 
-        if sort_by == 'cost_asc':
-            queryset = queryset.order_by('cost_for_two')
-        elif sort_by == 'cost_desc':
-            queryset = queryset.order_by('-cost_for_two')
-        elif sort_by == 'rating_asc':
-            queryset = queryset.order_by('average_rating')
-        elif sort_by == 'rating_desc':
-            queryset = queryset.order_by('-average_rating')
+        sort_options = {
+            'cost_asc': 'cost_for_two',
+            'cost_desc': '-cost_for_two',
+            'rating_asc': 'average_rating',
+            'rating_desc': '-average_rating',
+        }
+        order_by_field = sort_options.get(sort_by)
+        if order_by_field:
+            queryset = queryset.order_by(order_by_field)
 
         return queryset
     
