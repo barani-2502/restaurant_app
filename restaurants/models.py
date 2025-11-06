@@ -171,11 +171,11 @@ class Visit(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='visits')
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE, related_name='visited_by_user')
-    visited = models.DateTimeField(auto_now_add=True)
+    visited_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'restaurant')
-        ordering = ['-visited']
+        ordering = ['-visited_at']
 
     def __str__(self):
         return f'{self.user.username} visited {self.restaurant.name}'
