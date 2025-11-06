@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark, Visit
+from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark, Visit, Review
 from django.core.paginator import Page
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -457,3 +457,69 @@ class VisitToggleTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertFalse(Visit.objects.filter(user=self.user, restaurant=self.restaurant).exists())
 
+class ReviewTestsBase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.restaurant = Restaurant.objects.create(
+            name="A2B",
+            address = "Pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+
+class ReviewCreateView(ReviewTestsBase):
+    def test_create_review_requires_login(self):
+        url = reverse('add_review', kwargs={'pk': self.restaurant.pk})
+        data = {'title':'ok', 'rating':4, 'comment': 'nice food' }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
+    
+    def test_create_view_creates_review_successfully(self):
+        data = {'title':'ok', 'rating':4, 'comment': 'nice food' }
+        self.client.login(username='user', password='pass12345678')
+        url = reverse('add_review', kwargs={'pk':self.restaurant.pk})
+        response = self.client.post(url, data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(Review.objects.filter(user=self.user, restaurant=self.restaurant).exists())
+        review = Review.objects.get(user=self.user, restaurant=self.restaurant)
+        self.assertEqual(review.rating, 4)
+        self.assertEqual(review.comment, 'nice food')
+
+class ReviewUpdateView(ReviewTestsBase):
+    def test_update_view_requires_login(self):
+        url = reverse('edit_review', kwargs={'pk': 1})
+        data = {'title':'ok', 'rating':4, 'comment': 'nice food' }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
+
+    def test_update_view_updates_review_successfully(self):
+        review = Review.objects.create(user=self.user, restaurant=self.restaurant, rating=3, comment='Okay food')
+        self.client.login(username="user", password="pass12345678")
+        url = reverse('edit_review', kwargs={'pk': review.pk})
+        updated_data = {'rating': 5, 'title':'great' ,'comment': 'Amazing food!'}
+        response = self.client.post(url, updated_data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        review.refresh_from_db()
+        self.assertEqual(review.rating, 5)
+        self.assertEqual(review.comment, 'Amazing food!')
+
+class ReviewDeleteView(ReviewTestsBase):
+    def test_delete_view_requires_login(self):
+        url = reverse('delete_review', kwargs={'pk': 1})
+        data = {'title':'ok', 'rating':4, 'comment': 'nice food' }
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
+
+    def test_delete_view_deletes_review_successfully(self):
+        review = Review.objects.create(user=self.user, restaurant=self.restaurant, rating=4, comment='Good')
+        self.client.login(username="user", password="pass12345678")
+        url = reverse('delete_review', kwargs={'pk': review.pk})
+        response = self.client.post(url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(Review.objects.filter(pk=review.pk).exists())
