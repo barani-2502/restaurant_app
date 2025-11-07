@@ -8,6 +8,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Bookmark, Visit, Review
 from .forms import CustomUserCreationForm, UserProfileForm, ReviewForm
 from django.db.models import Avg, Count
+from django_filters.views import FilterView
+from .filters import RestaurantFilter
 
 class BookmarkedIdsMixin:
     def get_context_data(self, **kwargs):
@@ -36,10 +38,11 @@ class HomePageView(BookmarkedIdsMixin, VisitedIdsMixin, ListView):
     def get_queryset(self):
         return Restaurant.objects.filter(spotlight=True).prefetch_related('restaurant_photos')
 
-class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, ListView):
+class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, FilterView):
     model = Restaurant
     template_name = 'restaurants/restaurant_list.html'
     context_object_name = 'restaurants'
+    filterset_class = RestaurantFilter
     paginate_by = 9
 
     def get_queryset(self):
@@ -47,22 +50,6 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin
             average_rating=Avg('reviewed_by_user__rating'),
             total_reviews=Count('reviewed_by_user', distinct=True)
         )
-        name = self.request.GET.get('name')
-        city = self.request.GET.get('city')
-        cuisines = self.request.GET.get('cuisines')
-        food_type = self.request.GET.get('food_type')
-        is_open = self.request.GET.get('open')
-
-        if name:
-            queryset = queryset.filter(name__icontains=name)
-        if city:
-            queryset = queryset.filter(city__icontains=city)
-        if cuisines:
-            queryset = queryset.filter(cuisines__name__icontains=cuisines)
-        if food_type:
-            queryset = queryset.filter(food_type__iexact=food_type.lower())
-        if is_open in ['true', 'false']:
-            queryset = queryset.filter(is_open=(is_open == 'true'))
 
         sort_by = self.request.GET.get('sort')
 

@@ -1,28 +1,33 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
 <h2>All Restaurants</h2>
 
-<form method="get">
-<input type="text" name="name" placeholder="Name" value="{{ request.GET.name }}">
-<input type="text" name="city" placeholder="City" value="{{ request.GET.city }}">
-<input type="text" name="cuisines" placeholder="Cuisine" value="{{ request.GET.cuisines }}">
-<select name="food_type">
-    <option value="">All</option>
-    <option value="veg" {% if request.GET.food_type == "veg" %}selected{% endif %}>Vegetarian</option>
-    <option value="non_veg" {% if request.GET.food_type == "non_veg" %}selected{% endif %}>Non-Vegetarian</option>
-    <option value="vegan" {% if request.GET.food_type == "vegan" %}selected{% endif %}>Vegan</option>
-</select>
-<select name="sort">
-    <option value="">Sort by</option>
-    <option value="cost_asc" {% if request.GET.sort == 'cost_asc' %}selected{% endif %}>Cost ↑</option>
-    <option value="cost_desc" {% if request.GET.sort == 'cost_desc' %}selected{% endif %}>Cost ↓</option>
-    <option value="rating_desc" {% if request.GET.sort == 'rating_desc' %}selected{% endif %}>Rating ↓</option>
-    <option value="rating_asc" {% if request.GET.sort == 'rating_asc' %}selected{% endif %}>Rating ↑</option>
-</select>
-<button type="submit" class="block w-24 bg-blue-600 text-white py-1 rounded mt-2 mb-2 text-center">Apply</button>
-</form>
+<form method="get" class="text-center">
+    {% for field in filter.form %}
+        {% if field.name != 'open_status' %}
+            {% render_field field placeholder=field.label class="border rounded px-1 py-1 mb-2" %}
+        {% endif %}
+    {% endfor %}
 
+    <select name="open_status" class="border rounded px-1 py-1 mb-2">
+        <option value="">Open/Closed</option>
+        <option value="True" {% if request.GET.open_status == 'True' %}selected{% endif %}>Open</option>
+        <option value="False" {% if request.GET.open_status == 'False' %}selected{% endif %}>Closed</option>
+    </select>
+    <select name="sort" class="border rounded px-1 py-1">
+        <option value="">Sort by</option>
+        <option value="cost_asc" {% if request.GET.sort == 'cost_asc' %}selected{% endif %}>Cost ↑</option>
+        <option value="cost_desc" {% if request.GET.sort == 'cost_desc' %}selected{% endif %}>Cost ↓</option>
+        <option value="rating_desc" {% if request.GET.sort == 'rating_desc' %}selected{% endif %}>Rating ↓</option>
+        <option value="rating_asc" {% if request.GET.sort == 'rating_asc' %}selected{% endif %}>Rating ↑</option>
+    </select>
+<div class="text-center">
+    <button type="submit" class="w-24 bg-blue-600 text-white py-1 rounded mt-2 mb-2 text-center">Apply</button>
+</div>
+</form>
 
 <div class="row">
     {% for restaurant in restaurants %}
