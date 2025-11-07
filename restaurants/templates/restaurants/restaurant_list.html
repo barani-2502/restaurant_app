@@ -7,16 +7,8 @@
 
 <form method="get" class="text-center">
     {% for field in filter.form %}
-        {% if field.name != 'open_status' %}
-            {% render_field field placeholder=field.label class="border rounded px-1 py-1 mb-2" %}
-        {% endif %}
+        {% render_field field placeholder=field.label class="border rounded px-1 py-1 mb-2" %}
     {% endfor %}
-
-    <select name="open_status" class="border rounded px-1 py-1 mb-2">
-        <option value="">Open/Closed</option>
-        <option value="True" {% if request.GET.open_status == 'True' %}selected{% endif %}>Open</option>
-        <option value="False" {% if request.GET.open_status == 'False' %}selected{% endif %}>Closed</option>
-    </select>
     <select name="sort" class="border rounded px-1 py-1">
         <option value="">Sort by</option>
         <option value="cost_asc" {% if request.GET.sort == 'cost_asc' %}selected{% endif %}>Cost ↑</option>

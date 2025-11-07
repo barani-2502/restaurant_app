@@ -1,5 +1,6 @@
 import django_filters
 from .models import Restaurant
+from django import forms
 
 class RestaurantFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(field_name='name', lookup_expr='icontains', label='Name')
@@ -11,9 +12,18 @@ class RestaurantFilter(django_filters.FilterSet):
         label='',
         empty_label=None,
     )
-    open_status = django_filters.BooleanFilter(field_name='open_status')
+    open_status = django_filters.BooleanFilter(
+        field_name='open_status',
+        widget=forms.Select(
+            choices=[
+                ('', 'Open/Closed'),
+                ('true', 'Open'),
+                ('false', 'Closed'),
+            ]
+        )
+    )
 
     class Meta:
         model = Restaurant
         fields = ['name', 'city', 'cuisines', 'food_type', 'open_status']
-        
+
