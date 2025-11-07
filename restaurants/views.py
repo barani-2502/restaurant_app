@@ -51,18 +51,6 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin
             total_reviews=Count('reviewed_by_user', distinct=True)
         )
 
-        sort_by = self.request.GET.get('sort')
-
-        sort_options = {
-            'cost_asc': 'cost_for_two',
-            'cost_desc': '-cost_for_two',
-            'rating_asc': 'average_rating',
-            'rating_desc': '-average_rating',
-        }
-        order_by_field = sort_options.get(sort_by)
-        if order_by_field:
-            queryset = queryset.order_by(order_by_field)
-
         return queryset
     
     def get_context_data(self, **kwargs):

@@ -23,7 +23,34 @@ class RestaurantFilter(django_filters.FilterSet):
         )
     )
 
+    sort = django_filters.ChoiceFilter(
+        choices=[
+                ('', 'Sort By'),
+                ('cost_asc', 'Cost ↑'),
+                ('cost_desc', 'Cost ↓'),
+                ('rating_asc', 'Rating ↑'),
+                ('rating_desc', 'Rating ↓'),
+            ],
+            label='Sort By',
+            method = 'sort_by',
+            empty_label = None
+    )
+
+    def sort_by(self, queryset, name, value):
+        sort_options = {
+            'cost_asc': 'cost_for_two',
+            'cost_desc': '-cost_for_two',
+            'rating_asc': 'average_rating',
+            'rating_desc': '-average_rating',
+        }
+
+        order_by_field = sort_options.get(value)
+        if order_by_field:
+            queryset = queryset.order_by(order_by_field)
+
+        return queryset
+
     class Meta:
         model = Restaurant
-        fields = ['name', 'city', 'cuisines', 'food_type', 'open_status']
+        fields = ['name', 'city', 'cuisines', 'food_type', 'open_status', 'sort']
 
