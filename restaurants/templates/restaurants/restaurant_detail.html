@@ -34,7 +34,7 @@
         {% if menu_items %}
             <ul class="space-y-4">
                 {% for item in menu_items %}
-                    <li class="flex justify content rounded-lg border p-3">
+                    <li class="flex items-start rounded-lg border p-3">
                         {% with photo=item.menu_item_photos.first %}
                             {% if photo.image %}
                                 <img 
@@ -45,9 +45,9 @@
                             {% endif %}
                         {% endwith %}
                         <div>
-                            <p>{{ item.name }}</p>
+                            <p><strong>{{ item.name }}</strong></p>
                             <p>₹{{ item.price }}</p>
-                            <p>{{ item.description }}</p>
+                            <p><small>{{ item.description }}</small></p>
                         </div>
                     </li>
                 {% endfor %}
