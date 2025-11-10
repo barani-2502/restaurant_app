@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Restaurant, Bookmark, Visit, Review
+from .models import Restaurant, Bookmark, Visit, Review, RestaurantPhoto
 from .forms import CustomUserCreationForm, UserProfileForm, ReviewForm
 from django.db.models import Avg, Count
 from django_filters.views import FilterView
@@ -78,6 +78,20 @@ class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMix
                 user=self.request.user
             ).first()
         context['user_review'] = user_review
+        return context
+    
+class RestaurantImageView(LoginRequiredMixin, ListView):
+    model = RestaurantPhoto
+    template_name = 'restaurants/restaurant_images.html'
+    context_object_name = 'images'
+
+    def get_queryset(self):
+        restaurant_id = self.kwargs['pk']
+        return RestaurantPhoto.objects.filter(restaurant_id=restaurant_id)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['restaurant'] = Restaurant.objects.get(pk=self.kwargs['pk'])
         return context
 
 class RegisterView(CreateView):

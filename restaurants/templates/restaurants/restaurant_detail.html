@@ -2,103 +2,97 @@
 
 {% block content %}
 
-<h1>{{ restaurant.name }}</h1>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    
-    <div class="bg-white rounded-lg overflow-hidden border border-gray-300 flex flex-col">
+<div class="max-w-4xl mx-auto p-4 space-y-10">
+    <div class="bg-white rounded-lg overflow-hidden border mb-4">
         {% with photo=restaurant.restaurant_photos.first %}
             {% if photo.image %}
                 <img 
                     src="{{ photo.image.url }}" 
                     alt="{{ restaurant.name }}" 
-                    class="h-56 w-full object-cover"
+                    class="h-64 w-full object-cover"
                 >
             {% endif %}
         {% endwith %}
-        
-        <div class="p-5">
-            <h2 class="text-center">Details</h2>
-            <hr>
 
-            <p class="mb-2"><strong>City:</strong> {{ restaurant.city }}</p>
-            <p class="mb-2"><strong>Food Type:</strong> {{ restaurant.get_food_type_display }}</p>
-            <p class="mb-2"><strong>Cost for two:</strong> ₹{{ restaurant.cost_for_two }}</p>
-            <p class="mb-2"><strong>Open:</strong> 
-                {{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed" }}
-            </p>
-            <p class="mb-2"><strong>Address:</strong> {{ restaurant.address }}</p>
-            <p class="mb-2"><strong>Cuisines:</strong> {{ restaurant.cuisines.all|join:", " }}</p>
-            <p class="mb-2"><strong>Rating:</strong> {{ restaurant.average_rating|default:0|floatformat:1 }}★ | {{ restaurant.total_reviews|default:0 }} Reviews </p>
+        <div class="p-6 space-y-2">
+            <h1 class="mb-2 text-center">{{ restaurant.name }}</h1>
+            <hr>
+            <p><strong>City:</strong> {{ restaurant.city }}</p>
+            <p><strong>Food Type:</strong> {{ restaurant.get_food_type_display }}</p>
+            <p><strong>Cost for two:</strong> ₹{{ restaurant.cost_for_two }}</p>
+            <p><strong>Status:</strong> {{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed" }}</p>
+            <p><strong>Address:</strong> {{ restaurant.address }}</p>
+            <p><strong>Cuisines:</strong> {{ restaurant.cuisines.all|join:", " }}</p>
+            <p><strong>Rating:</strong> {{ restaurant.average_rating|default:0|floatformat:1 }}★ | {{ restaurant.total_reviews|default:0 }} Reviews</p>
+            <a href="{% url 'restaurant_images' restaurant.pk %}">Click here to view more images</a>
         </div>
     </div>
 
-
-    <div class="lg:col-span-2">
-        <h2>Menu</h2>
+    <div class="rounded-lg p-6 border mb-4">
+        <h2 class="text-center mb-2">Menu</h2>
 
         {% if menu_items %}
-            <ul>
+            <ul class="space-y-4">
                 {% for item in menu_items %}
-                    <li class="flex items-start bg-white rounded-lg border  p-4">
+                    <li class="flex justify content rounded-lg border p-3">
                         {% with photo=item.menu_item_photos.first %}
                             {% if photo.image %}
                                 <img 
                                     src="{{ photo.image.url }}" 
                                     alt="{{ item.name }}" 
-                                    class="w-20 h-20 object-cover"
+                                    class="w-24 h-24 object-cover rounded mr-3"
                                 >
                             {% endif %}
                         {% endwith %}
-                        <div class="space-y-1 ml-2">
-                            <p><strong>{{ item.name }}</strong></p>
-                            <p><span>₹{{ item.price }}</span></p>
-                            <p><small>{{ item.description }}</small></p>
+                        <div>
+                            <p>{{ item.name }}</p>
+                            <p>₹{{ item.price }}</p>
+                            <p>{{ item.description }}</p>
                         </div>
                     </li>
                 {% endfor %}
             </ul>
         {% else %}
-            <p>No menu items available</p>
+            <p class="text-gray-600 text-center">No menu items available.</p>
         {% endif %}
-    </div>
+        </div>
 
-    <div class="lg:col-span-3">
-        <h3>{{ restaurant.name }} - Reviews</h3>
-
+    <div class="rounded-lg p-6 border">
+        <h2 class="mb-4 text-center">{{ restaurant.name }} - Reviews</h2>
         <hr>
 
         {% for review in restaurant.reviewed_by_user.all %}
-            <div>
-                <strong>{{ review.user.username }}</strong> rated {{ review.rating }}★
+            <div class="pb-2 mb-2">
+                <p><strong>{{ review.user.username }}</strong> rated {{ review.rating }}★</p>
                 <p><strong>{{ review.title }}</strong></p>
                 <p>{{ review.comment }}</p>
 
                 {% if review.user == user %}
-                    <a href="{% url 'edit_review' review.pk %}" 
-                    class="inline-block text-white bg-blue-500 px-2 py-1 w-24 rounded text-center">
-                        Edit
-                    </a> 
-                    <a href="{% url 'delete_review' review.pk %}" 
-                    class="inline-block text-white bg-red-500 px-2 py-1 w-24 rounded text-center">
-                        Delete
-                    </a>
+                    <div class="space-x-2 mt-2">
+                        <a href="{% url 'edit_review' review.pk %}" 
+                        class="inline-block text-white bg-blue-500 px-3 py-1 rounded">
+                            Edit
+                        </a> 
+                        <a href="{% url 'delete_review' review.pk %}" 
+                        class="inline-block text-white bg-red-500 px-3 py-1 rounded">
+                            Delete
+                        </a>
+                    </div>
                 {% endif %}
-                <hr>
+                <hr class="mt-2">
             </div>
         {% empty %}
-            <p>No reviews yet. Be the first to review!</p>
+            <p class="text-gray-600 text-center">No reviews yet. Be the first to review!</p>
         {% endfor %}
 
-        {% if user.is_authenticated %}
-            {% if not user_review %}
-                <a href="{% url 'add_review' restaurant.pk %}" 
-                class="inline-block text-white bg-blue-500 px-4 py-2 w-48 rounded text-center">
+        {% if user.is_authenticated and not user_review %}
+            <a href="{% url 'add_review' restaurant.pk %}" 
+            class="inline-block text-white bg-blue-600 px-5 py-2 rounded">
                 Write a Review
-                </a>
-            {% endif %}
+            </a>
         {% endif %}
-    </div>   
+    </div>
+
 </div>
 
 {% endblock %}

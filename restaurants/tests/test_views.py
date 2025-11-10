@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.urls import reverse
-from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark, Visit, Review
+from restaurants.models import Restaurant, Cuisine, MenuItem, Bookmark, Visit, Review, RestaurantPhoto
 from django.core.paginator import Page
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -165,6 +165,76 @@ class RestaurantDetailViewTests(TestCase):
         url = reverse('restaurant-detail', args=[999])
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+class RestaurantImageListViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.client.login(username='user', password='pass12345678')
+        self.restaurant = Restaurant.objects.create(
+            name= "ABC",
+            address = "pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+
+        self.empty_restaurant = Restaurant.objects.create(
+            name= "BCD",
+            address = "pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+
+        self.photo1 = RestaurantPhoto.objects.create(
+            restaurant = self.restaurant,
+            image = "restaurant_photos/test1"
+        )
+
+        self.photo2 = RestaurantPhoto.objects.create(
+            restaurant = self.restaurant,
+            image = "restaurant_photos/test2"
+        )
+
+        self.photo3 = RestaurantPhoto.objects.create(
+            restaurant = self.restaurant,
+            image = "restaurant_photos/test3"
+        )
+
+        self.url = reverse('restaurant_images', kwargs={'pk':self.restaurant.pk})
+        self.empty_url = reverse('restaurant_images', kwargs={'pk': self.empty_restaurant.pk})
+
+    def test_image_page_redirects_if_not_logged_in(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertEqual = (response.status_code, 302)
+        self.assertIn = ('/login/', response.url)
+
+    def test_image_page_uses_correct_template(self):
+        response = self.client.get(self.url)
+        self.assertTemplateUsed(response, 'restaurants/restaurant_images.html')
+
+    def test_image_view_context_contains_restaurant(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.context['restaurant'], self.restaurant)
+
+    def test_empty_image_page_renders_properly(self):
+        response = self.client.get(self.empty_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'restaurants/restaurant_images.html')
+        self.assertContains(response, "No images found.", status_code=200)
+
+    def test_image_view_returns_all_photos(self):
+        response = self.client.get(self.url)
+        images = response.context['images']
+        self.assertEqual(images.count(), 3)
+        self.assertIn(self.photo1, images)
+        self.assertIn(self.photo2, images)
+        self.assertIn(self.photo3, images)
 
 class RegisterViewTests(TestCase):
     def setUp(self):
