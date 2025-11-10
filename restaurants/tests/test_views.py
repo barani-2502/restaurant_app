@@ -211,8 +211,8 @@ class RestaurantImageListViewTests(TestCase):
     def test_image_page_redirects_if_not_logged_in(self):
         self.client.logout()
         response = self.client.get(self.url)
-        self.assertEqual = (response.status_code, 302)
-        self.assertIn = ('/login/', response.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
 
     def test_image_page_uses_correct_template(self):
         response = self.client.get(self.url)
