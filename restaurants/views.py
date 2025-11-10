@@ -98,7 +98,7 @@ class RestaurantImageView(LoginRequiredMixin, ListView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['restaurant'] = Restaurant.objects.get(pk=self.kwargs['pk'])
+        context['restaurant'] = get_object_or_404(Restaurant, pk=self.kwargs['pk'])
         return context
 
 class ReviewListView(LoginRequiredMixin, ListView):
