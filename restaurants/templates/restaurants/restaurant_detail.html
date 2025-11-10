@@ -61,8 +61,8 @@
         <h2 class="mb-4 text-center">{{ restaurant.name }} - Reviews</h2>
         <hr>
 
-        {% for review in restaurant.reviewed_by_user.all %}
-            <div class="pb-2 mb-2">
+        {% for review in recent_reviews %}
+            <div class="pb-2">
                 <p><strong>{{ review.user.username }}</strong> rated {{ review.rating }}★</p>
                 <p><strong>{{ review.title }}</strong></p>
                 <p>{{ review.comment }}</p>
@@ -79,7 +79,7 @@
                         </a>
                     </div>
                 {% endif %}
-                <hr class="mt-2">
+                <hr>
             </div>
         {% empty %}
             <p class="text-gray-600 text-center">No reviews yet. Be the first to review!</p>
@@ -92,6 +92,7 @@
             </a>
         {% endif %}
     </div>
+    <a class='block text-center' href="{% url 'restaurant_reviews' restaurant.pk %}">Click here to see all reviews</a>
 
 </div>
 

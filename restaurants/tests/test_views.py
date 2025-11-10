@@ -236,6 +236,59 @@ class RestaurantImageListViewTests(TestCase):
         self.assertIn(self.photo2, images)
         self.assertIn(self.photo3, images)
 
+class ReviewListViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.restaurant = Restaurant.objects.create(
+            name= "ABC",
+            address = "pallavaram",
+            city="chennai",
+            cost_for_two=500,
+            food_type="veg",
+            open_status=True,
+            spotlight=False,
+        )
+
+        for i in range(15):
+            reviewer = User.objects.create_user(username=f'user{i}', password='pass123')
+            Review.objects.create(
+                restaurant=self.restaurant,
+                user=reviewer,
+                rating=4,
+                comment=f"Test review {i}"
+            )
+
+        self.url = reverse('restaurant_reviews', kwargs={'pk': self.restaurant.pk})
+
+    def test_review_page_redirects_if_not_logged_in(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('/login/', response.url)
+
+    def test_review_page_uses_correct_template(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'restaurants/restaurant_reviews.html')
+
+    def test__review_page_context_contains_restaurant_and_reviews(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(self.url)
+        self.assertEqual(response.context['restaurant'], self.restaurant)
+        self.assertIn('reviews', response.context)
+
+    def test_pagination_is_ten(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(self.url)
+        self.assertTrue(response.context['is_paginated'])
+        self.assertEqual(len(response.context['reviews']), 10)
+
+    def test_second_page_contains_remaining_reviews(self):
+        self.client.login(username='user', password='pass12345678')
+        response = self.client.get(f"{self.url}?page=2")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['reviews']), 5)
+
 class RegisterViewTests(TestCase):
     def setUp(self):
         self.url = reverse("register")

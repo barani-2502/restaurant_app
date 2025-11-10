@@ -78,6 +78,13 @@ class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMix
                 user=self.request.user
             ).first()
         context['user_review'] = user_review
+        recent_reviews = restaurant.reviewed_by_user.all().exclude(user=self.request.user)[:4]
+        reviews = []
+        if user_review:
+            reviews.append(user_review)
+        reviews.extend(recent_reviews)
+
+        context['recent_reviews'] = reviews
         return context
     
 class RestaurantImageView(LoginRequiredMixin, ListView):
@@ -92,6 +99,21 @@ class RestaurantImageView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['restaurant'] = Restaurant.objects.get(pk=self.kwargs['pk'])
+        return context
+
+class ReviewListView(LoginRequiredMixin, ListView):
+    model = Review
+    template_name = 'restaurants/restaurant_reviews.html'
+    context_object_name = 'reviews'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        self.restaurant = get_object_or_404(Restaurant, pk=self.kwargs['pk'])
+        return Review.objects.filter(restaurant=self.restaurant)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['restaurant'] = self.restaurant
         return context
 
 class RegisterView(CreateView):
