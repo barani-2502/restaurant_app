@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="rounded-lg p-6 border">
+<div class="rounded-lg p-6 border border-black shadow">
     <h2 class="mb-4 text-center">{{ restaurant.name }} - Reviews</h2>
     <hr>
 
@@ -14,11 +14,11 @@
             {% if review.user == user %}
                 <div class="space-x-2 mt-2">
                     <a href="{% url 'edit_review' review.pk %}" 
-                    class="inline-block text-white bg-blue-500 px-3 py-1 rounded">
+                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded bg-shadow">
                         Edit
                     </a> 
                     <a href="{% url 'delete_review' review.pk %}" 
-                    class="inline-block text-white bg-red-500 px-3 py-1 rounded">
+                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded bg-shadow">
                         Delete
                     </a>
                 </div>
@@ -31,7 +31,7 @@
 
     {% if user.is_authenticated and not user_review %}
         <a href="{% url 'add_review' restaurant.pk %}" 
-        class="inline-block text-white bg-blue-600 px-5 py-2 rounded">
+        class="px-4 py-2 border border-black rounded shadow hover:bg-white">
             Write a Review
         </a>
     {% endif %}
