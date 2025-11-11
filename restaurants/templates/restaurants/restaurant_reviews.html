@@ -14,11 +14,11 @@
             {% if review.user == user %}
                 <div class="space-x-2 mt-2">
                     <a href="{% url 'edit_review' review.pk %}" 
-                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded bg-shadow">
+                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded shadow">
                         Edit
                     </a> 
                     <a href="{% url 'delete_review' review.pk %}" 
-                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded bg-shadow">
+                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded shadow">
                         Delete
                     </a>
                 </div>
