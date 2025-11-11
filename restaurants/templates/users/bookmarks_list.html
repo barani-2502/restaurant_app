@@ -22,20 +22,19 @@
         <ul class="inline-flex items-center space-x-2">
             {% if page_obj.has_previous %}
                 <li>
-                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
+                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm text-white bg-gray-800 font-medium border border-black rounded hover:bg-gray-700">Previous</a>
                 </li>
             {% endif %}
 
             <li>
-                <span class="px-4 py-2 text-sm font-semibold border rounded">
+                <span class="px-4 py-2 text-sm font-semibold border border-black rounded">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                 </span>
             </li>
 
             {% if page_obj.has_next %}
                 <li>
-                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
-                </li>
+                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm text-white bg-gray-800 font-medium border border-black rounded hover:bg-gray-700">Next</a>
             {% endif %}
         </ul>
     </nav>

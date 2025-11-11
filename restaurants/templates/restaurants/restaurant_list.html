@@ -7,7 +7,7 @@
 
 <form method="get" class="text-center">
     {% for field in filter.form %}
-        {% render_field field placeholder=field.label class="border rounded px-1 py-1 mb-2" %}
+        {% render_field field placeholder=field.label class="border border-black rounded px-1 py-1 mb-2" %}
     {% endfor %}
 <div class="text-center">
     <button type="submit" class="px-4 mb-2 bg-gray-800 text-white border border-black rounded shadow hover:bg-gray-700">Apply</button>
@@ -29,19 +29,19 @@
         <ul class="inline-flex items-center space-x-2">
             {% if page_obj.has_previous %}
                 <li>
-                    <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium border rounded">Previous</a>
+                    <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm text-white bg-gray-800 font-medium border border-black rounded hover:bg-gray-700">Previous</a>
                 </li>
             {% endif %}
 
             <li>
-                <span class="px-4 py-2 text-sm font-semibold border rounded">
+                <span class="px-4 py-2 text-sm font-semibold border border-black rounded">
                     Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
                 </span>
             </li>
 
             {% if page_obj.has_next %}
                 <li>
-                    <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
+                    <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm text-white bg-gray-800 font-medium border border-black rounded hover:bg-gray-700">Next</a>
                 </li>
             {% endif %}
         </ul>
