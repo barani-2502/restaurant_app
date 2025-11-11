@@ -46,11 +46,7 @@ class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin
     paginate_by = 9
 
     def get_queryset(self):
-        queryset = Restaurant.objects.prefetch_related('restaurant_photos').annotate(
-            average_rating=Avg('reviewed_by_user__rating'),
-            total_reviews=Count('reviewed_by_user', distinct=True)
-        )
-
+        queryset = Restaurant.objects.prefetch_related('restaurant_photos')
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -68,10 +64,7 @@ class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMix
     context_object_name = 'restaurant'
 
     def get_queryset(self):
-        queryset = Restaurant.objects.prefetch_related('restaurant_photos', 'cuisines').annotate(
-            average_rating = Avg('reviewed_by_user__rating'),
-            total_reviews = Count('reviewed_by_user', distinct=True)
-        )
+        queryset = Restaurant.objects.prefetch_related('restaurant_photos', 'cuisines')
         return queryset
 
     def get_context_data(self, **kwargs):
