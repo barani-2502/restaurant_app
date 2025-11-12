@@ -22,7 +22,7 @@
         {% else %}
             <div>
                 {{ field.label_tag }}
-                <div 
+                <div
                     x-data="{
                         disabled: false,
                         max_stars: 5,
@@ -40,9 +40,6 @@
                             if (this.disabled) return;
                             this.stars = star;
                             this.value = star;
-                            $refs.hidden_input.value = this.value; 
-                            $refs.rated.classList.remove('opacity-0');
-                            setTimeout(() => $refs.rated.classList.add('opacity-0'), 2000);
                         }
                     }"
                     x-init="this.stars = this.value">
@@ -58,16 +55,8 @@
                                     :class="{ 'text-gray-400 cursor-not-allowed': disabled }"
                                     >
                                     <svg 
-                                        x-show="star > stars" 
-                                        class="w-6 h-6 text-gray-300 fill-current" 
-                                        xmlns="http://www.w3.org/2000/svg" 
-                                        viewBox="0 0 256 256"
-                                    >
-                                        <path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/>
-                                    </svg>
-                                    <svg 
-                                        x-show="star <= stars" 
-                                        class="w-6 h-6 text-yellow-400 fill-current" 
+                                        class="w-6 h-6 fill-current"
+                                        :class="{ 'text-gray-300': star > stars, 'text-yellow-400': star <= stars }"
                                         xmlns="http://www.w3.org/2000/svg" 
                                         viewBox="0 0 256 256"
                                     >
