@@ -28,6 +28,7 @@
                 </form>
                 <form action="{% url 'visited_toggle' restaurant.id %}" method="post">
                     {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.path }}">
                     <button type="submit" class=" mt-2 hover:text-green-600 bg-transparent border-0 p-0" 
                             title="{% if restaurant.id in visited_ids %}Remove from visited{% else %}Mark as visited{% endif %}">
                         {% if restaurant.id in visited_ids %}
