@@ -11,10 +11,13 @@
         <form method="post" class="px-2 py-2">
             {% csrf_token %}
             {% include "partials/form_fields.html" %}
-            <button type="submit" class="w-full bg-blue-600 text-white mt-2 py-2 rounded">
+            <button type="submit" class="w-full bg-gray-800 text-white border border-black mt-2 py-2 rounded hover:bg-gray-700">
                 Login
             </button>
         </form>
+        <div class="text-center">
+            <a href="{% url 'password_reset' %}">Forgot your password?</a>
+        </div>
     </div>
 </div>
 {% endblock %}

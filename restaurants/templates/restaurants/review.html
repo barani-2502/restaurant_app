@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="flex justify-center mt-16">
-    <div class="bg-white p-4 mb-16 rounded-lg border max-w-md w-full">
+    <div class="bg-white p-4 mb-16 rounded-lg border max-w-md w-full border-black shadow">
         <h4 class="text-center mb-3 text-xl font-semibold">
             {% if form.instance.pk or has_review %}
                 Edit Your Review
@@ -24,11 +24,11 @@
             {% csrf_token %}
             {% include "partials/form_fields.html" %}
             
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded mb-2">
+            <button type="submit" class="w-full inline-block text-center mb-2 px-4 py-2 border border-black rounded shadow hover:bg-gray-200">
                 Submit
             </button>
             <a href="{% url 'restaurant-detail' restaurant.pk %}" 
-               class="w-full inline-block text-center text-white bg-gray-500  py-2 rounded">
+               class="w-full inline-block text-center text-white mb-2 px-4 py-2 bg-gray-800 rounded shadow hover:bg-gray-700">
                 Cancel
             </a>
         </form>

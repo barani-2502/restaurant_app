@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="rounded-lg p-6 border">
+<div class="rounded-lg p-6 border border-black shadow">
     <h2 class="mb-4 text-center">{{ restaurant.name }} - Reviews</h2>
     <hr>
 
@@ -14,11 +14,11 @@
             {% if review.user == user %}
                 <div class="space-x-2 mt-2">
                     <a href="{% url 'edit_review' review.pk %}" 
-                    class="inline-block text-white bg-blue-500 px-3 py-1 rounded">
+                    class="inline-block text-center mb-2 px-4 py-1 border border-black rounded shadow hover:bg-gray-100">
                         Edit
                     </a> 
                     <a href="{% url 'delete_review' review.pk %}" 
-                    class="inline-block text-white bg-red-500 px-3 py-1 rounded">
+                    class="inline-block text-center mb-2 px-4 py-1 text-white border border-black bg-gray-800 rounded shadow hover:bg-gray-700">
                         Delete
                     </a>
                 </div>
@@ -31,7 +31,7 @@
 
     {% if user.is_authenticated and not user_review %}
         <a href="{% url 'add_review' restaurant.pk %}" 
-        class="inline-block text-white bg-blue-600 px-5 py-2 rounded">
+        class="px-4 py-2 border border-black rounded shadow hover:bg-gray-200">
             Write a Review
         </a>
     {% endif %}
@@ -42,19 +42,19 @@
     <ul class="inline-flex items-center space-x-2">
         {% if page_obj.has_previous %}
             <li>
-                <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
+                <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm text-white bg-gray-800 font-medium border border-black rounded hover:bg-gray-700">Previous</a>
             </li>
         {% endif %}
 
         <li>
-            <span class="px-4 py-2 text-sm font-semibold border rounded">
+            <span class="px-4 py-2 text-sm font-semibold border border-black rounded">
                 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
             </span>
         </li>
 
         {% if page_obj.has_next %}
             <li>
-                <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
+                <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm text-white bg-gray-800 font-medium border border-black rounded hover:bg-gray-700">Next</a>
             </li>
         {% endif %}
     </ul>
