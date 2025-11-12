@@ -1,6 +1,7 @@
 import django_filters
 from .models import Restaurant
 from django import forms
+from django.db.models import Avg
 
 class RestaurantFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(field_name='name', lookup_expr='icontains', label='Name')
@@ -37,11 +38,13 @@ class RestaurantFilter(django_filters.FilterSet):
     )
 
     def sort_by(self, queryset, name, value):
+        queryset = queryset.annotate(avg_rating=Avg('reviewed_by_user__rating'))
+
         sort_options = {
             'cost_asc': 'cost_for_two',
             'cost_desc': '-cost_for_two',
-            'rating_asc': 'average_rating',
-            'rating_desc': '-average_rating',
+            'rating_asc': 'avg_rating',
+            'rating_desc': '-avg_rating',
         }
 
         order_by_field = sort_options.get(value)
