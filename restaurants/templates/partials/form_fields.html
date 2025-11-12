@@ -66,10 +66,9 @@
                             </template>
                         </ul>
                         <input 
-                            x-ref="hidden_input"
                             type="hidden"
                             name="{{ field.name }}"
-                            value="{{ field.value|default:0 }}"
+                            :value="value"
                         >
                     </div>
                 </div>
