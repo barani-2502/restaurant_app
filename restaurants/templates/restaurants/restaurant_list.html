@@ -1,9 +1,20 @@
 {% extends 'base.html' %}
 
+{% load widget_tweaks %}
+
 {% block content %}
 <h2>All Restaurants</h2>
 
-<div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+<form method="get" class="text-center">
+    {% for field in filter.form %}
+        {% render_field field placeholder=field.label class="border rounded px-1 py-1 mb-2" %}
+    {% endfor %}
+<div class="text-center">
+    <button type="submit" class="w-24 bg-blue-600 text-white py-1 rounded mt-2 mb-2 text-center">Apply</button>
+</div>
+</form>
+
+<div class="row">
     {% for restaurant in restaurants %}
         {% include 'restaurants/restaurant_card.html' %}
     {% empty %}
@@ -18,8 +29,7 @@
         <ul class="inline-flex items-center space-x-2">
             {% if page_obj.has_previous %}
                 <li>
-                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
-                    <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
+                    <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
                 </li>
             {% endif %}
 
@@ -31,7 +41,7 @@
 
             {% if page_obj.has_next %}
                 <li>
-                    <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
+                    <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
                 </li>
             {% endif %}
         </ul>

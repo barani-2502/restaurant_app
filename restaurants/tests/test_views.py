@@ -48,6 +48,76 @@ class RestaurantListViewTests(TestCase):
         self.assertContains(response, "Restaurant0")
         self.assertContains(response, "Restaurant8")
 
+class RestaurantListFilterAndSortTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='user', password='pass12345678')
+        self.client.login(username='user', password='pass12345678')
+        self.indian = Cuisine.objects.create(name='Indian')
+        self.italian = Cuisine.objects.create(name='Italian')
+        self.restaurant1 = Restaurant.objects.create(name="Pizza Hut", city="Chennai", cost_for_two=200, food_type="veg")
+        self.restaurant1.cuisines.add(self.italian)
+        self.restaurant2 = Restaurant.objects.create(name="Thalapakatti", city="Cuddalore", cost_for_two=200, food_type="non-veg")
+        self.restaurant2.cuisines.add(self.indian)
+        self.restaurant3 = Restaurant.objects.create(name="A2B", city="Chennai", cost_for_two=300, food_type="veg")
+        Review.objects.create(user=self.user, restaurant=self.restaurant1, rating=5, comment="Great")
+        Review.objects.create(user=self.user, restaurant=self.restaurant2, rating=2, comment="Okay")
+
+    def test_filter_by_name_works(self):
+        url = reverse('restaurant-list')
+        response = self.client.get(url, {"name": "A2B"})
+        self.assertEqual(response.status_code, 200)
+        for restaurant in response.context["restaurants"]:
+            self.assertEqual(restaurant.name, "A2B")
+
+    def test_filter_by_city_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"city": "chennai"})
+        self.assertEqual(response.status_code, 200)
+        for restaurant in response.context["restaurants"]:
+            self.assertEqual(restaurant.city, "Chennai")
+
+    def test_filter_by_cuisine_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"cuisines": "Indian"})
+        self.assertEqual(response.status_code, 200)
+        for restaurant in response.context["restaurants"]:
+            self.assertEqual(restaurant.cuisines.first().name, "Indian")
+    
+    def test_filter_by_food_type_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"food_type": "veg"})
+        self.assertEqual(response.status_code, 200)
+        for restaurant in response.context["restaurants"]:
+            self.assertEqual(restaurant.food_type, "veg")
+
+    def test_sort_by_cost_ascending_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"sort": "cost_asc"})
+        self.assertEqual(response.status_code, 200)
+        costs = [r.cost_for_two for r in response.context["restaurants"]]
+        self.assertEqual(costs, sorted(costs))
+
+    def test_sort_by_cost_descending_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"sort": "cost_desc"})
+        self.assertEqual(response.status_code, 200)
+        costs = [r.cost_for_two for r in response.context["restaurants"]]
+        self.assertEqual(costs, sorted(costs, reverse=True))
+
+    def test_sort_by_rating_ascending_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"sort": "rating_asc"})
+        self.assertEqual(response.status_code, 200)
+        ratings = [getattr(r, "average_rating", 0) or 0 for r in response.context["restaurants"]]
+        self.assertEqual(ratings, sorted(ratings))
+
+    def test_sort_by_rating_descending_works(self):
+        url = reverse("restaurant-list")
+        response = self.client.get(url, {"sort": "rating_desc"})
+        self.assertEqual(response.status_code, 200)
+        ratings = [getattr(r, "average_rating", 0) or 0 for r in response.context["restaurants"]]
+        self.assertEqual(ratings, sorted(ratings, reverse=True))
+
 class RestaurantDetailViewTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='user', password='pass12345678')

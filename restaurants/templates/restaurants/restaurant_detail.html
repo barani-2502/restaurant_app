@@ -28,7 +28,8 @@
                 {{ restaurant.open_status|yesno:"🟢 Open,🔴 Closed" }}
             </p>
             <p class="mb-2"><strong>Address:</strong> {{ restaurant.address }}</p>
-            <p><strong>Cuisines:</strong> {{ restaurant.cuisines.all|join:", " }}</p>
+            <p class="mb-2"><strong>Cuisines:</strong> {{ restaurant.cuisines.all|join:", " }}</p>
+            <p class="mb-2"><strong>Rating:</strong> {{ restaurant.average_rating|default:0|floatformat:1 }}★ | {{ restaurant.total_reviews|default:0 }} Reviews </p>
         </div>
     </div>
 

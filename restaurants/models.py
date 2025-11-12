@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinValueValidator
 from decimal import Decimal
 from django.contrib.auth.models import User
+from django.db.models import Avg, Count
 
 class Cuisine(models.Model):
     """
@@ -77,6 +78,14 @@ class Restaurant(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def average_rating(self):
+        return self.reviewed_by_user.aggregate(Avg('rating'))['rating__avg'] or 0
+
+    @property
+    def total_reviews(self):
+        return self.reviewed_by_user.count()
     
 class MenuItem(models.Model):
     """

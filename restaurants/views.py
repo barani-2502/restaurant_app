@@ -7,6 +7,9 @@ from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Restaurant, Bookmark, Visit, Review
 from .forms import CustomUserCreationForm, UserProfileForm, ReviewForm
+from django.db.models import Avg, Count
+from django_filters.views import FilterView
+from .filters import RestaurantFilter
 
 class BookmarkedIdsMixin:
     def get_context_data(self, **kwargs):
@@ -35,22 +38,34 @@ class HomePageView(BookmarkedIdsMixin, VisitedIdsMixin, ListView):
     def get_queryset(self):
         return Restaurant.objects.filter(spotlight=True).prefetch_related('restaurant_photos')
 
-class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, ListView):
+class RestaurantListView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, FilterView):
     model = Restaurant
     template_name = 'restaurants/restaurant_list.html'
     context_object_name = 'restaurants'
+    filterset_class = RestaurantFilter
     paginate_by = 9
 
     def get_queryset(self):
-        return Restaurant.objects.prefetch_related('restaurant_photos')
+        queryset = Restaurant.objects.prefetch_related('restaurant_photos')
+        return queryset
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['selected_filters'] = self.request.GET
+        query_params = self.request.GET.copy()
+        if 'page' in query_params:
+            del query_params['page']
+        context['query_params'] = query_params.urlencode()
+        return context
+            
 class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMixin, DetailView):
     model = Restaurant
     template_name = 'restaurants/restaurant_detail.html'
     context_object_name = 'restaurant'
 
     def get_queryset(self):
-        return super().get_queryset().prefetch_related('restaurant_photos', 'cuisines')
+        queryset = Restaurant.objects.prefetch_related('restaurant_photos', 'cuisines')
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
