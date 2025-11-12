@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Restaurant, Bookmark, Visit, Review
+from .models import Restaurant, Bookmark, Visit, Review, RestaurantPhoto
 from .forms import CustomUserCreationForm, UserProfileForm, ReviewForm
 from django.db.models import Avg, Count
 from django_filters.views import FilterView
@@ -78,6 +78,42 @@ class RestaurantDetailView(LoginRequiredMixin, BookmarkedIdsMixin, VisitedIdsMix
                 user=self.request.user
             ).first()
         context['user_review'] = user_review
+        recent_reviews = restaurant.reviewed_by_user.all().exclude(user=self.request.user)[:4]
+        reviews = []
+        if user_review:
+            reviews.append(user_review)
+        reviews.extend(recent_reviews)
+
+        context['recent_reviews'] = reviews
+        return context
+    
+class RestaurantImageView(LoginRequiredMixin, ListView):
+    model = RestaurantPhoto
+    template_name = 'restaurants/restaurant_images.html'
+    context_object_name = 'images'
+
+    def get_queryset(self):
+        restaurant_id = self.kwargs['pk']
+        return RestaurantPhoto.objects.filter(restaurant_id=restaurant_id)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['restaurant'] = get_object_or_404(Restaurant, pk=self.kwargs['pk'])
+        return context
+
+class ReviewListView(LoginRequiredMixin, ListView):
+    model = Review
+    template_name = 'restaurants/restaurant_reviews.html'
+    context_object_name = 'reviews'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        self.restaurant = get_object_or_404(Restaurant, pk=self.kwargs['pk'])
+        return Review.objects.filter(restaurant=self.restaurant)
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['restaurant'] = self.restaurant
         return context
 
 class RegisterView(CreateView):

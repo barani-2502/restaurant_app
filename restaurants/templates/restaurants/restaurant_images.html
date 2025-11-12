@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2 class="text-center mb-4">{{ restaurant.name }} Gallery</h2>
+    <div class="flex flex-wrap gap-4 justify-center">
+        {% for photo in images %}
+            {% if photo.image %}
+                <img 
+                    src="{{ photo.image.url }}" 
+                    alt="{{ restaurant.name }}"
+                    class="w-52 h-52 object-cover rounded"
+                >
+            {% endif %}
+            {% empty %}
+            <div class="text-gray-600">
+                <p>No images found.</p>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

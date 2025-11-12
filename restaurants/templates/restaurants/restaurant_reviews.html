@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="rounded-lg p-6 border">
+    <h2 class="mb-4 text-center">{{ restaurant.name }} - Reviews</h2>
+    <hr>
+
+    {% for review in reviews %}
+        <div class="pb-2 mb-2">
+            <p><strong>{{ review.user.username }}</strong> rated {{ review.rating }}★</p>
+            <p><strong>{{ review.title }}</strong></p>
+            <p>{{ review.comment }}</p>
+
+            {% if review.user == user %}
+                <div class="space-x-2 mt-2">
+                    <a href="{% url 'edit_review' review.pk %}" 
+                    class="inline-block text-white bg-blue-500 px-3 py-1 rounded">
+                        Edit
+                    </a> 
+                    <a href="{% url 'delete_review' review.pk %}" 
+                    class="inline-block text-white bg-red-500 px-3 py-1 rounded">
+                        Delete
+                    </a>
+                </div>
+            {% endif %}
+            <hr class="mt-2">
+        </div>
+    {% empty %}
+        <p class="text-gray-600 text-center">No reviews yet. Be the first to review!</p>
+    {% endfor %}
+
+    {% if user.is_authenticated and not user_review %}
+        <a href="{% url 'add_review' restaurant.pk %}" 
+        class="inline-block text-white bg-blue-600 px-5 py-2 rounded">
+            Write a Review
+        </a>
+    {% endif %}
+</div>
+
+{% if is_paginated %}
+<nav class="mt-8 flex justify-center">
+    <ul class="inline-flex items-center space-x-2">
+        {% if page_obj.has_previous %}
+            <li>
+                <a href="?page={{ page_obj.previous_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium  border rounded">Previous</a>
+            </li>
+        {% endif %}
+
+        <li>
+            <span class="px-4 py-2 text-sm font-semibold border rounded">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+        </li>
+
+        {% if page_obj.has_next %}
+            <li>
+                <a href="?page={{ page_obj.next_page_number }}&{{ query_params }}" class="px-4 py-2 text-sm font-medium border rounded">Next</a>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+{% endblock %}
