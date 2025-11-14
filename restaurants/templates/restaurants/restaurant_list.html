@@ -5,12 +5,17 @@
 {% block content %}
 <h2>All Restaurants</h2>
 
-<form method="get" class="text-center">
+<form method="get" class="text-center mb-4">
     {% for field in filter.form %}
         {% render_field field placeholder=field.label class="border border-black rounded px-1 py-1 mb-2" %}
     {% endfor %}
-<div class="text-center">
-    <button type="submit" class="px-4 mb-2 bg-gray-800 text-white border border-black rounded shadow hover:bg-gray-700">Apply</button>
+<div class="text-center flex flex-col items-center gap-2">
+    <button type="submit" class="px-4 py-1 mb-2 bg-gray-800 text-white border border-black rounded shadow hover:bg-gray-700">Apply</button>
+    {% if query_params %}
+        <a href="{% url 'restaurant-list' %}" class="px-4 py-1 border border-black rounded shadow hover:bg-gray-200">
+            Clear Filters
+        </a>
+    {% endif %}
 </div>
 </form>
 
