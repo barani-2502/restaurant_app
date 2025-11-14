@@ -15,7 +15,7 @@
         <form method="post">
             {% csrf_token %}
             <button type="submit" class="w-full inline-block text-white text-center bg-gray-800 mb-2 px-4 py-2 border border-black rounded shadow hover:bg-gray-700">Delete review</button>
-            <a href="{% url 'restaurant-detail' object.restaurant.pk %}" class="w-full inline-block text-center mb-2 px-4 py-2 border border-black rounded shadow hover:bg-gray-200">No</a>
+            <a href="{% url 'restaurant-detail' object.restaurant.pk %}" class="w-full inline-block text-center text-black mb-2 px-4 py-2 border border-black rounded shadow hover:bg-gray-200">No</a>
         </form>
     </div>
 </div>
