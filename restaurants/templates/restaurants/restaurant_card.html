@@ -1,8 +1,12 @@
 <div class="col-md-4 mb-4">
     <div class="card h-100 shadow border border-black">
-        {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
-            <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
-        {% endif %}
+        {% with photo=restaurant.restaurant_photos.first %}
+            {% if photo and photo.image %}
+                <a href="{% url 'restaurant-detail' pk=restaurant.id %}">
+                    <img src="{{ photo.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
+                </a>
+            {% endif %}
+        {% endwith %}
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <h4>
