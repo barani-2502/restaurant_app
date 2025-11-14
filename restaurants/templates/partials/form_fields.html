@@ -17,35 +17,15 @@
 {% for field in form %}
     <div class="mb-2">
         {% if field.name != 'rating' %}
+        <div class="font-medium text-sm">
             {{ field.label_tag }}
+        </div>
             {% render_field field class="w-full border rounded px-3 py-2 mt-1" %}
         {% else %}
             <div>
-                {{ field.label_tag }}
-                <div
-                    x-data="{
-                        disabled: false,
-                        max_stars: 5,
-                        stars: 0,
-                        value: {{ field.value|default:0 }},
-                        hoverStar(star){
-                            if (this.disabled) return;
-                            this.stars = star; 
-                        },
-                        mouseLeftStar(){
-                            if (this.disabled) return;
-                            this.stars = this.value;
-                        },
-                        rate(star){
-                            if (this.disabled) return;
-                            this.stars = star;
-                            this.value = star;
-                        }
-                    }"
-                    x-init="this.stars = this.value">
-
-                    <div class="flex flex-col items-center max-w-md mx-auto justify-center">
-                        <ul class="flex">
+                {% include 'partials/script.html' %}
+                    <div>
+                        <ul class="flex p-0 m-0">
                             <template x-for="star in max_stars">
                                 <li 
                                     @mouseover="hoverStar(star)" 

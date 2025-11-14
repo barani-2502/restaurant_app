@@ -1,0 +1,21 @@
+<div
+x-data="{
+    disabled: false,
+    max_stars: 5,
+    stars: 0,
+    value: {{ field.value|default:0 }},
+    hoverStar(star){
+        if (this.disabled) return;
+        this.stars = star; 
+    },
+    mouseLeftStar(){
+        if (this.disabled) return;
+        this.stars = this.value;
+    },
+    rate(star){
+        if (this.disabled) return;
+        this.stars = star;
+        this.value = star;
+    }
+}"
+x-init="this.stars = this.value">
