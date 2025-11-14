@@ -21,9 +21,9 @@ class UserProfileForm(forms.ModelForm):
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ['title', 'rating', 'comment']
+        fields = ['rating', 'title', 'comment']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control', 'max_length':150}),
             'rating': forms.Select(attrs={'class': 'form-select'}),
-            'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3}),
+            'title': forms.TextInput(attrs={'class': 'form-control', 'max_length':150, 'placeholder': 'Give your review a title' }),
+            'comment': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder':'What others should know about this place?'}),
         }
