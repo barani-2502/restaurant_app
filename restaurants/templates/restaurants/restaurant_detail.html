@@ -84,14 +84,17 @@
         {% empty %}
             <p class="text-gray-600 text-center">No reviews yet. Be the first to review!</p>
         {% endfor %}
-
-        {% if user.is_authenticated and not user_review %}
-            <a href="{% url 'add_review' restaurant.pk %}" 
-            class="inline-block text-white bg-blue-600 px-5 py-2 rounded">
-                Write a Review
+        <div class="flex space-x-4">     
+            {% if user.is_authenticated and not user_review %}
+                <a href="{% url 'add_review' restaurant.pk %}" 
+                class="inline-block text-white text-center bg-gray-800 px-4 py-2 rounded shadow hover:bg-gray-700">
+                    Write a Review
+                </a>
+            {% endif %}
+            <a class="inline-block px-4 py-2 text-center text-black border border-black rounded shadow hover:bg-gray-200" href="{% url 'restaurant_reviews' restaurant.pk %}">
+                Click here to see all reviews
             </a>
-        {% endif %}
-        <a class='px-4 py-2 text-center text-black border border-black rounded shadow hover:bg-gray-200' href="{% url 'restaurant_reviews' restaurant.pk %}">Click here to see all reviews</a>
+        </div> 
     </div>
 </div>
 
