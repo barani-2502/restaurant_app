@@ -1,8 +1,12 @@
 <div class="col-md-4 mb-4">
     <div class="card h-100 shadow border border-black">
-        {% if restaurant.restaurant_photos.first and restaurant.restaurant_photos.first.image %}
-            <img src="{{ restaurant.restaurant_photos.first.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
-        {% endif %}
+        {% with photo=restaurant.restaurant_photos.first %}
+            {% if photo and photo.image %}
+                <a href="{% url 'restaurant-detail' pk=restaurant.id %}">
+                    <img src="{{ photo.image.url }}" class="card-img-top" alt="{{restaurant.name}}">
+                </a>
+            {% endif %}
+        {% endwith %}
         <div class="card-body">
             <div class="flex items-center justify-between">
                 <h4>
@@ -17,7 +21,8 @@
                 <form action="{% url 'bookmark_toggle' restaurant.id %}" method="post">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.path }}">
-                <button type="submit" class="hover:text-red-600 bg-transparent border-0 p-0">
+                <button type="submit" class="hover:text-red-600 bg-transparent border-0 p-0" 
+                        title="{% if restaurant.id in bookmarked_ids %}Remove bookmark{% else %}Bookmark restaurant{% endif %}">
                     {% if restaurant.id in bookmarked_ids %}
                         {% include "restaurants/icons/bookmark_filled.html" %}
                     {% else %}
@@ -28,7 +33,8 @@
                 <form action="{% url 'visited_toggle' restaurant.id %}" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.path }}">
-                    <button type="submit" class=" mt-2 hover:text-green-600 bg-transparent border-0 p-0">
+                    <button type="submit" class=" mt-2 hover:text-green-600 bg-transparent border-0 p-0" 
+                            title="{% if restaurant.id in visited_ids %}Remove from visited{% else %}Mark as visited{% endif %}">
                         {% if restaurant.id in visited_ids %}
                             {% include "restaurants/icons/visited_filled.html" %}
                         {% else %}
